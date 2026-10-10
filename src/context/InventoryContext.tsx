@@ -20,6 +20,7 @@ interface InventoryContextType {
   addStock: (id: string, quantity: number) => void;
   removeStock: (id: string, quantity: number) => void;
   updateItem: (id: string, updates: Partial<InventoryItem>) => void;
+  clearAllItems: () => void;
   isAddDialogOpen: boolean;
   setIsAddDialogOpen: (open: boolean) => void;
   initialAddCode: string;
@@ -189,6 +190,10 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
     );
   };
 
+  const clearAllItems = () => {
+    setItems([]);
+  };
+
   return (
     <InventoryContext.Provider
       value={{
@@ -198,6 +203,7 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
         addStock,
         removeStock,
         updateItem,
+        clearAllItems,
         isAddDialogOpen,
         setIsAddDialogOpen,
         initialAddCode,
