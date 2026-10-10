@@ -1,0 +1,31 @@
+{
+  "expo": {
+    "name": "Warehouse Inventory Management SuperApp",
+    "slug": "warehouse-inventory-management-superapp",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./src/assets/bulan-jatuh.png",
+    "scheme": "warehouse-inventory",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./src/assets/bulan-jatuh.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.warehouse.inventory"
+    },
+    "platforms": [
+      "ios",
+      "android"
+    ],
+    "plugins": [
+      "expo-router",
+      "expo-status-bar",
+      "expo-image",
+      "expo-sharing"
+    ]
+  }
+}
