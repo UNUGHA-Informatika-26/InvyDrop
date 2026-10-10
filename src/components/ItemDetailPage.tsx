@@ -23,6 +23,7 @@ import {
   Trash2,
   Package,
   QrCode,
+  Pencil,
 } from 'lucide-react-native';
 import { useInventory, InventoryItem } from '@/context/InventoryContext';
 import { useStockHistory, StockTransaction } from '@/context/StockHistoryContext';
@@ -227,6 +228,13 @@ export function ItemDetailPage({ itemId }: ItemDetailPageProps) {
         </Pressable>
         <Text style={styles.topTitle}>Detail Barang</Text>
         <View style={styles.topRightGroup}>
+          <Pressable
+            style={styles.topIconBtn}
+            onPress={() => router.push(`/item/edit/${item.id}`)}
+            hitSlop={10}
+          >
+            <Pencil size={20} color={theme.colors.foreground} />
+          </Pressable>
           <Pressable
             style={styles.topIconBtn}
             onPress={() => setIsQrOpen(true)}
