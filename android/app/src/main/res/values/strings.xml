@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Inventory SuperApp</string>
+    <string name="title_activity_main">Inventory SuperApp</string>
+    <string name="package_name">com.warehouse.inventory</string>
+    <string name="custom_url_scheme">com.warehouse.inventory</string>
+</resources>

@@ -1,0 +1,374 @@
+@custom-variant dark (&:is(.dark *));
+
+/* ─── Light (warm orange / Claude palette) ─── */
+:root {
+  --font-size: 16px;
+
+  /* Surfaces */
+  --background: #FAF9F5;
+  --foreground: #141413;
+  --card: #FFFFFF;
+  --card-foreground: #141413;
+  --popover: #FFFFFF;
+  --popover-foreground: #141413;
+
+  /* Primary – warm orange */
+  --primary: #D97757;
+  --primary-foreground: #FFFFFF;
+  --primary-hover: #C15F3C;
+  --primary-soft: #F6E3DA;
+
+  /* Secondary / Muted / Accent – warm cream neutrals */
+  --secondary: #F0EEE6;
+  --secondary-foreground: #141413;
+  --muted: #F0EEE6;
+  --muted-foreground: #5E5D59;
+  --accent: #F0EEE6;
+  --accent-foreground: #141413;
+
+  /* Destructive */
+  --destructive: #B5483A;
+  --destructive-foreground: #FFFFFF;
+  --destructive-soft: #F4DAD5;
+
+  /* Borders & Inputs */
+  --border: #E8E6DC;
+  --input: #E8E6DC;
+  --input-background: #F0EEE6;
+  --switch-background: #D0CEC5;
+
+  /* Ring */
+  --ring: #D97757;
+
+  /* Charts */
+  --chart-1: #D97757;
+  --chart-2: #788C5D;
+  --chart-3: #6A9BCB;
+  --chart-4: #D4A24C;
+  --chart-5: #B0AEA5;
+
+  /* Radius */
+  --radius: 0.625rem;
+
+  /* Sidebar */
+  --sidebar: #FAF9F5;
+  --sidebar-foreground: #141413;
+  --sidebar-primary: #D97757;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #F6E3DA;
+  --sidebar-accent-foreground: #141413;
+  --sidebar-border: #E8E6DC;
+  --sidebar-ring: #D97757;
+
+  /* Semantic inventory tokens */
+  --success: #788C5D;
+  --success-soft: #E6EBDD;
+  --warning: #D4A24C;
+  --warning-soft: #F7EBD0;
+  --info: #6A9BCB;
+  --info-soft: #DCE8F3;
+
+  /* Typography weights */
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+
+  /* Hero banner overlay */
+  --hero-overlay: rgba(125, 200, 240, 0.35);
+  --hero-scrim: rgba(20, 20, 19, 0.28);
+}
+
+/* ─── Dark ─── */
+.dark {
+  --background: #141413;
+  --foreground: #FAF9F5;
+  --card: #1F1E1D;
+  --card-foreground: #FAF9F5;
+  --popover: #1F1E1D;
+  --popover-foreground: #FAF9F5;
+
+  /* Primary stays the same orange in dark */
+  --primary: #D97757;
+  --primary-foreground: #FFFFFF;
+  --primary-hover: #C15F3C;
+  --primary-soft: #3A2419;
+
+  /* Secondary / Muted / Accent – dark neutrals */
+  --secondary: #2A2927;
+  --secondary-foreground: #FAF9F5;
+  --muted: #2A2927;
+  --muted-foreground: #B0AEA5;
+  --accent: #2A2927;
+  --accent-foreground: #FAF9F5;
+
+  /* Destructive */
+  --destructive: #D4604F;
+  --destructive-foreground: #FFFFFF;
+  --destructive-soft: #3D1A16;
+
+  /* Borders & Inputs */
+  --border: #3A3835;
+  --input: #3A3835;
+  --input-background: #2A2927;
+  --switch-background: #4A4845;
+
+  /* Ring */
+  --ring: #D97757;
+
+  /* Charts – same semantic colors, slightly lighter for contrast */
+  --chart-1: #D97757;
+  --chart-2: #8FA870;
+  --chart-3: #7AAEDC;
+  --chart-4: #DDB060;
+  --chart-5: #C0BEBC;
+
+  /* Sidebar */
+  --sidebar: #1F1E1D;
+  --sidebar-foreground: #FAF9F5;
+  --sidebar-primary: #D97757;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #2A2927;
+  --sidebar-accent-foreground: #FAF9F5;
+  --sidebar-border: #3A3835;
+  --sidebar-ring: #D97757;
+
+  /* Semantic inventory tokens */
+  --success: #8FA870;
+  --success-soft: #1E2818;
+  --warning: #DDB060;
+  --warning-soft: #2E2210;
+  --info: #7AAEDC;
+  --info-soft: #152230;
+
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+
+  /* Hero banner overlay */
+  --hero-overlay: rgba(125, 200, 240, 0.35);
+  --hero-scrim: rgba(20, 20, 19, 0.28);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-soft: var(--primary-soft);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-destructive-soft: var(--destructive-soft);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-input-background: var(--input-background);
+  --color-switch-background: var(--switch-background);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  /* Inventory semantic tokens */
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+    -webkit-tap-highlight-color: transparent;
+    box-sizing: border-box;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  /**
+  * Default typography styles for HTML elements (h1-h4, p, label, button, input).
+  * These are in @layer base, so Tailwind utility classes (like text-sm, text-lg) automatically override them.
+  */
+
+  html {
+    font-size: var(--font-size);
+  }
+
+  h1 {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  h2 {
+    font-size: var(--text-xl);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  h3 {
+    font-size: var(--text-lg);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  h4 {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  label {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  button {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  input {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-normal);
+    line-height: 1.5;
+  }
+}
+
+/* ─── Mobile-First Layout ─── */
+
+/* Lock the document itself; scrolling happens inside #root > .app-shell */
+html,
+body {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+  /* Prevent iOS address-bar bounce on document level */
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+#root {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Dark surround on desktop */
+  background-color: #2C2C2E;
+}
+
+/* The single app shell wrapper used in Layout.tsx */
+.app-shell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--background);
+  /* Smooth momentum scrolling for inner scroll areas */
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Desktop preview frame: show phone outline at ≥768px */
+@media (min-width: 768px) {
+  .app-shell {
+    width: 390px;
+    height: 844px;
+    max-height: 100%;
+    border-radius: 40px;
+    overflow: hidden;
+    box-shadow:
+      0 0 0 12px #1C1C1E,
+      0 0 0 14px #3A3A3C,
+      0 32px 64px rgba(0, 0, 0, 0.7);
+  }
+}
+
+/* Scrollable content area inside the shell */
+.app-content {
+  flex: 1 1 0%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+  /* Bottom padding accounts for safe-area so content isn't hidden behind nav */
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Hide scrollbars on mobile feel */
+.app-content::-webkit-scrollbar {
+  display: none;
+}
+.app-content {
+  scrollbar-width: none;
+}
+
+/* Bottom nav safe-area padding */
+.bottom-nav {
+  flex-shrink: 0;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Touch targets: minimum 44px */
+button, a, [role="button"] {
+  min-height: 44px;
+}
+
+/* Print Styles for QR Code Dialog */
+@media print {
+  body * {
+    visibility: hidden !important;
+  }
+  #qr-print-area,
+  #qr-print-area * {
+    visibility: visible !important;
+  }
+  #qr-print-area {
+    position: fixed !important;
+    left: 50% !important;
+    top: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: auto !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+  #qr-print-area h3,
+  #qr-print-area p {
+    color: #000000 !important;
+  }
+}
+
