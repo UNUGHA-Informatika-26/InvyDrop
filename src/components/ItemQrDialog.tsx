@@ -37,18 +37,20 @@ export function ItemQrDialog({ open, onOpenChange, item }: ItemQrDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent style={styles.dialogContent}>
-        <DialogHeader style={styles.header}>
-          <DialogTitle style={styles.headerTitle}>Kode QR Barang</DialogTitle>
-        </DialogHeader>
+      <DialogContent style={styles.dialogCard}>
+        {/* Header */}
+        <View style={styles.header}>
+          <Text style={styles.title}>Kode QR Barang</Text>
+          <Text style={styles.subtitle}>Pindai untuk identifikasi cepat barang</Text>
+        </View>
 
         {/* QR Code Container */}
         <View style={styles.qrWrapper}>
           <View style={styles.qrCard}>
             <QRCodeSVG
               value={qrValue}
-              size={150}
-              color="#000000"
+              size={160}
+              color="#111827"
               backgroundColor="#FFFFFF"
             />
           </View>
@@ -59,92 +61,113 @@ export function ItemQrDialog({ open, onOpenChange, item }: ItemQrDialogProps) {
           <Text style={styles.itemName} numberOfLines={2}>
             {item.name}
           </Text>
-          <Text style={styles.itemCode}>{qrValue}</Text>
+          <View style={styles.codeBadge}>
+            <Text style={styles.itemCode}>{qrValue}</Text>
+          </View>
           <Text style={styles.itemMeta}>
             {item.category} • {item.location}
           </Text>
         </View>
 
-        <DialogFooter style={styles.footer}>
+        {/* Footer Actions */}
+        <View style={styles.footer}>
           <Button
             variant="outline"
             onPress={() => onOpenChange(false)}
-            style={styles.actionBtn}
+            style={styles.actionBtnOutline}
           >
             Tutup
           </Button>
-          <Button onPress={handleShareOrPrint} style={styles.actionBtn}>
+          <Button onPress={handleShareOrPrint} style={styles.actionBtnPrimary}>
             <Printer size={16} color={theme.colors.white} style={styles.iconSpacing} />
             <Text style={styles.btnText}>Bagikan / Cetak</Text>
           </Button>
-        </DialogFooter>
+        </View>
       </DialogContent>
     </Dialog>
   );
 }
 
 const styles = StyleSheet.create({
-  dialogContent: {
-    paddingHorizontal: 0,
-    paddingVertical: 0,
+  dialogCard: {
+    padding: 22,
+    alignItems: 'center',
   },
   header: {
-    marginBottom: 4,
+    alignItems: 'center',
+    marginBottom: 14,
   },
-  headerTitle: {
+  title: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: theme.colors.foreground,
     textAlign: 'center',
-    fontSize: theme.typography.fontLg,
+  },
+  subtitle: {
+    fontSize: 12,
+    color: theme.colors.mutedForeground,
+    textAlign: 'center',
+    marginTop: 2,
   },
   qrWrapper: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 4,
+    marginBottom: 14,
   },
   qrCard: {
     backgroundColor: '#FFFFFF',
-    padding: 10,
-    borderRadius: theme.radii.md,
+    padding: 12,
+    borderRadius: 16,
     borderWidth: 1,
-    borderColor: theme.colors.border,
+    borderColor: 'rgba(0, 0, 0, 0.08)',
     shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.08,
-    shadowRadius: 5,
-    elevation: 3,
+    shadowRadius: 10,
+    elevation: 4,
   },
   infoContainer: {
     alignItems: 'center',
-    marginTop: 4,
-    marginBottom: 6,
+    marginBottom: 18,
+    width: '100%',
   },
   itemName: {
-    fontSize: theme.typography.fontBase,
+    fontSize: 16,
     fontWeight: '700',
     color: theme.colors.foreground,
     textAlign: 'center',
+    marginBottom: 6,
+  },
+  codeBadge: {
+    backgroundColor: theme.colors.primarySoft,
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+    borderRadius: 6,
+    marginBottom: 4,
   },
   itemCode: {
-    fontSize: theme.typography.fontSm,
-    fontWeight: '600',
+    fontSize: 12,
+    fontWeight: '700',
     fontFamily: 'monospace',
     color: theme.colors.primary,
-    marginTop: 2,
   },
   itemMeta: {
-    fontSize: theme.typography.fontXs,
+    fontSize: 12,
     color: theme.colors.mutedForeground,
-    marginTop: 2,
+    textAlign: 'center',
   },
   footer: {
     width: '100%',
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: theme.spacing.sm,
-    marginTop: 8,
+    gap: 10,
   },
-  actionBtn: {
+  actionBtnOutline: {
     flex: 1,
-    height: 42,
+    height: 44,
+  },
+  actionBtnPrimary: {
+    flex: 1.4,
+    height: 44,
   },
   iconSpacing: {
     marginRight: 6,
@@ -152,6 +175,6 @@ const styles = StyleSheet.create({
   btnText: {
     color: theme.colors.white,
     fontWeight: '600',
-    fontSize: theme.typography.fontSm,
+    fontSize: 14,
   },
 });

@@ -47,25 +47,35 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
 export function DialogContent({
   children,
   style,
+  scrollable = false,
   contentContainerStyle,
 }: {
   children?: React.ReactNode;
   style?: StyleProp<ViewStyle>;
+  scrollable?: boolean;
   contentContainerStyle?: StyleProp<ViewStyle>;
   className?: string;
 }) {
+  if (scrollable) {
+    return (
+      <View style={[styles.dialogCard, style]}>
+        <ScrollView
+          bounces={false}
+          overScrollMode="never"
+          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+          contentContainerStyle={[styles.scrollContent, contentContainerStyle]}
+        >
+          {children}
+        </ScrollView>
+      </View>
+    );
+  }
+
   return (
     <View style={[styles.dialogCard, style]}>
-      <ScrollView
-        bounces={false}
-        overScrollMode="never"
-        showsVerticalScrollIndicator={false}
-        showsHorizontalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
-        contentContainerStyle={[styles.scrollContent, contentContainerStyle]}
-      >
-        {children}
-      </ScrollView>
+      {children}
     </View>
   );
 }
@@ -124,17 +134,16 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     width: '100%',
-    maxWidth: 420,
+    maxWidth: 400,
   },
   dialogCard: {
     backgroundColor: theme.colors.card,
-    borderRadius: theme.radii.xl,
-    padding: theme.spacing.lg,
-    maxHeight: '90%',
+    borderRadius: 24,
+    padding: 20,
     shadowColor: theme.colors.black,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.2,
-    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.15,
+    shadowRadius: 16,
     elevation: 8,
   },
   scrollContent: {
