@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Slot } from 'expo-router';
+import { Slot, useRouter } from 'expo-router';
 import { BottomNav } from './BottomNav';
 import { useInventory, InventoryItem } from '@/context/InventoryContext';
 import { useQrScanner } from '@/hooks/useQrScanner';
@@ -16,6 +16,7 @@ interface LayoutProps {
 }
 
 export function Layout({ children }: LayoutProps) {
+  const router = useRouter();
   const { items, isAddDialogOpen, setIsAddDialogOpen, initialAddCode, openAddItem } = useInventory();
   const { scan, isWebScannerOpen, isScanning, handleWebScanSuccess, handleWebScanClose } = useQrScanner();
 
@@ -69,7 +70,7 @@ export function Layout({ children }: LayoutProps) {
       {/* Unified Bottom Navigation */}
       {!isScanning && (
         <BottomNav
-          onAddClick={() => openAddItem()}
+          onAddClick={() => router.push('/add-item')}
           onScanClick={handleStartScan}
         />
       )}

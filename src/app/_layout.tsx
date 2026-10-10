@@ -24,6 +24,7 @@ export default function RootLayout() {
                   <Stack.Screen name="login" />
                   <Stack.Screen name="signup" />
                   <Stack.Screen name="item/[id]" />
+                  <Stack.Screen name="add-item" />
                 </Stack>
               </ToastProvider>
             </StockHistoryProvider>
