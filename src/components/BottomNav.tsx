@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useRouter, usePathname } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Package, BarChart3, Plus, ScanLine, Settings } from 'lucide-react-native';
 import { theme } from '@/theme';
 
@@ -12,13 +13,14 @@ interface BottomNavProps {
 export function BottomNav({ onAddClick, onScanClick }: BottomNavProps) {
   const router = useRouter();
   const pathname = usePathname();
+  const insets = useSafeAreaInsets();
 
   const isInventoryActive = pathname === '/' || pathname === '' || pathname === '/index';
   const isStatsActive = pathname === '/statistics';
   const isSettingsActive = pathname === '/settings';
 
   return (
-    <View style={styles.navBar}>
+    <View style={[styles.navBar, { paddingBottom: Math.max(insets.bottom, 12) }]}>
       <View style={styles.navContent}>
         {/* Slot 1: Inventory */}
         <Pressable
