@@ -6,8 +6,9 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  Pressable,
 } from 'react-native';
-import { useRouter, Link } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { useAuth } from '../context/AuthContext';
 import { Button } from '@/components/ui/Button';
 import { TextField } from '@/components/ui/TextField';
@@ -143,9 +144,13 @@ export function SignupPage() {
             <Text style={styles.footerText}>
               Already have an account?{' '}
             </Text>
-            <Link href="/login" style={styles.linkText}>
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => router.push('/login')}
+              style={styles.linkText}
+            >
               <Text style={styles.linkHighlight}>Sign in</Text>
-            </Link>
+            </Pressable>
           </View>
         </View>
       </ScrollView>

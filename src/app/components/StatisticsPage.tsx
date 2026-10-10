@@ -1,13 +1,12 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, useWindowDimensions } from 'react-native';
 import { useInventory } from '../context/InventoryContext';
 import { Package, AlertTriangle, TrendingDown, Archive } from 'lucide-react-native';
 import { BarChart, PieChart } from 'react-native-gifted-charts';
 import { theme } from '../../theme';
 
-const screenWidth = Dimensions.get('window').width;
-
 export function StatisticsPage() {
+  const { width: screenWidth } = useWindowDimensions();
   const { items } = useInventory();
 
   const totalItems = items.length;
@@ -87,7 +86,7 @@ export function StatisticsPage() {
             </View>
             <Text style={styles.statNumWarning}>{lowStockCount}</Text>
           </View>
-          <Text style={styles.statLabel}>Low Stock Alert</Text>
+          <Text style={styles.statLabel}>Low Stock Warning</Text>
         </View>
 
         <View style={styles.statCard}>
