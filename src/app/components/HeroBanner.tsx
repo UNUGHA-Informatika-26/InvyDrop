@@ -1,12 +1,16 @@
+import React from 'react';
+import { View, Text, StyleSheet, StyleProp, ViewStyle } from 'react-native';
+import { Image, ImageSource } from 'expo-image';
 import logo from '@/assets/logo-blackarch.png';
+import { theme } from '../../theme';
 
 interface HeroBannerProps {
-  imageSrc: string;
+  imageSrc: any;
   title: string;
   subtitle: string;
-  /** Extra classes on the outer container (height, radius, flex-shrink, etc.) */
+  style?: StyleProp<ViewStyle>;
+  contentStyle?: StyleProp<ViewStyle>;
   className?: string;
-  /** Extra classes on the content wrapper (alignment, padding, etc.) */
   contentClassName?: string;
 }
 
@@ -14,54 +18,93 @@ export function HeroBanner({
   imageSrc,
   title,
   subtitle,
-  className = '',
-  contentClassName = '',
+  style,
+  contentStyle,
 }: HeroBannerProps) {
   return (
-    <div className={`relative overflow-hidden ${className}`}>
-      {/* 1 · Background image */}
-      <img
-        src={imageSrc}
-        alt="Warehouse"
-        className="w-full h-full object-cover"
+    <View style={[styles.container, style]}>
+      {/* Background image */}
+      <Image
+        source={imageSrc}
+        style={StyleSheet.absoluteFill}
+        contentFit="cover"
+        priority="high"
       />
 
-      {/* 2 · Light-blue colour overlay */}
-      <div
-        className="absolute inset-0 pointer-events-none rounded-[inherit]"
-        style={{ background: 'var(--hero-overlay)' }}
-      />
+      {/* Colour overlay */}
+      <View style={styles.colorOverlay} />
 
-      {/* 3 · Bottom scrim for text legibility */}
-      <div
-        className="absolute inset-0 pointer-events-none rounded-[inherit]"
-        style={{
-          background: 'linear-gradient(to top, var(--hero-scrim), transparent 60%)',
-        }}
-      />
+      {/* Scrim overlay */}
+      <View style={styles.scrimOverlay} />
 
-      {/* 4 · Content */}
-      <div className={`absolute inset-0 flex items-end pb-10 z-10 ${contentClassName}`}>
-        {/* Logo kiri + kolom teks kanan */}
-        <div className="flex items-center gap-0 min-w-0">
-          {/* Logo */}
-          <img
-            src={logo}
-            alt="Logo WarehouseFlow"
-            draggable={false}
-            className="size-14 shrink-0 object-contain select-none drop-shadow-[0_2px_8px_rgba(20,20,19,0.45)]"
+      {/* Content */}
+      <View style={[styles.content, contentStyle]}>
+        <View style={styles.row}>
+          <Image
+            source={logo}
+            style={styles.logo}
+            contentFit="contain"
           />
-          {/* Judul + subtitle ditumpuk di kanan logo */}
-          <div className="flex flex-col gap-0.5 min-w-0">
-            <h1 className="whitespace-nowrap font-bold leading-none tracking-tight text-white text-[clamp(1.25rem,6vw,1.75rem)] [text-shadow:0_1px_8px_rgba(20,20,19,0.35)]">
+          <View style={styles.textColumn}>
+            <Text style={styles.title} numberOfLines={1}>
               {title}
-            </h1>
-            <p className="text-white/90 text-xs leading-snug [text-shadow:0_1px_8px_rgba(20,20,19,0.35)]">
+            </Text>
+            <Text style={styles.subtitle} numberOfLines={1}>
               {subtitle}
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
+            </Text>
+          </View>
+        </View>
+      </View>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    height: 200,
+    overflow: 'hidden',
+    position: 'relative',
+    borderBottomLeftRadius: 28,
+    borderBottomRightRadius: 28,
+  },
+  colorOverlay: {
+    ...StyleSheet.absoluteFill,
+    backgroundColor: 'rgba(217, 119, 87, 0.25)',
+  },
+  scrimOverlay: {
+    ...StyleSheet.absoluteFill,
+    backgroundColor: 'rgba(20, 20, 19, 0.45)',
+  },
+  content: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    paddingHorizontal: 20,
+    paddingBottom: 24,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  logo: {
+    width: 52,
+    height: 52,
+    marginRight: 10,
+  },
+  textColumn: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  title: {
+    fontSize: theme.typography.font2xl,
+    fontWeight: '800',
+    color: '#FFFFFF',
+    letterSpacing: -0.5,
+  },
+  subtitle: {
+    fontSize: theme.typography.fontSm,
+    color: 'rgba(255, 255, 255, 0.9)',
+    marginTop: 2,
+  },
+});

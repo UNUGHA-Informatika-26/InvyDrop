@@ -1,122 +1,256 @@
-import { Settings as SettingsIcon, Building2, Database, Info, HelpCircle, LogOut, User } from 'lucide-react';
+import React from 'react';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import {
+  Settings as SettingsIcon,
+  Building2,
+  Database,
+  Info,
+  HelpCircle,
+  LogOut,
+  User,
+} from 'lucide-react-native';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router';
-import { Button } from './ui/button';
-import { toast } from 'sonner';
+import { useRouter } from 'expo-router';
+import { Button } from '@/components/ui/Button';
+import { toast } from '@/components/ui/Toast';
+import { theme } from '../../theme';
 
 export function SettingsPage() {
   const { user, logout } = useAuth();
-  const navigate = useNavigate();
+  const router = useRouter();
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     toast.success('Logged out successfully');
-    navigate('/login');
+    router.replace('/login');
   };
 
   return (
-    <div className="min-h-full bg-background p-5 pb-6">
+    <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
       {/* Header */}
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-14 h-14 bg-primary-soft rounded-2xl flex items-center justify-center">
-          <SettingsIcon className="w-7 h-7 text-primary" />
-        </div>
-        <div>
-          <h1 className="text-2xl text-foreground">Settings</h1>
-          <p className="text-sm text-muted-foreground">Configure your warehouse system</p>
-        </div>
-      </div>
+      <View style={styles.header}>
+        <View style={styles.headerIconCircle}>
+          <SettingsIcon size={26} color={theme.colors.primary} />
+        </View>
+        <View style={styles.headerTextCol}>
+          <Text style={styles.headerTitle}>Settings</Text>
+          <Text style={styles.headerSubtitle}>Configure your warehouse system</Text>
+        </View>
+      </View>
 
       {/* Settings Options */}
-      <div className="space-y-3">
+      <View style={styles.optionsList}>
         {/* User Profile */}
-        <div className="bg-card rounded-2xl p-5">
-          <div className="flex items-start gap-4">
-            <div className="w-12 h-12 bg-info-soft rounded-xl flex items-center justify-center flex-shrink-0">
-              <User className="w-6 h-6 text-info" />
-            </div>
-            <div className="flex-1">
-              <h3 className="text-base mb-1 text-foreground">User Profile</h3>
-              <p className="text-muted-foreground">{user?.name}</p>
-              <p className="text-sm text-muted-foreground/70">{user?.email}</p>
-            </div>
-          </div>
-        </div>
+        <View style={styles.card}>
+          <View style={styles.row}>
+            <View style={styles.iconCircleInfo}>
+              <User size={22} color={theme.colors.info} />
+            </View>
+            <View style={styles.infoCol}>
+              <Text style={styles.cardTitle}>User Profile</Text>
+              <Text style={styles.cardValue}>{user?.name || 'Administrator'}</Text>
+              <Text style={styles.cardSubValue}>{user?.email || 'admin@warehouse.local'}</Text>
+            </View>
+          </View>
+        </View>
 
-        <div className="bg-card rounded-2xl p-5">
-          <div className="flex items-start gap-4">
-            <div className="w-12 h-12 bg-primary-soft rounded-xl flex items-center justify-center flex-shrink-0">
-              <Building2 className="w-6 h-6 text-primary" />
-            </div>
-            <div className="flex-1">
-              <h3 className="text-base mb-1 text-foreground">Facility Location</h3>
-              <p className="text-muted-foreground">North-East Logistics Hub</p>
-            </div>
-          </div>
-        </div>
+        {/* Facility Location */}
+        <View style={styles.card}>
+          <View style={styles.row}>
+            <View style={styles.iconCirclePrimary}>
+              <Building2 size={22} color={theme.colors.primary} />
+            </View>
+            <View style={styles.infoCol}>
+              <Text style={styles.cardTitle}>Facility Location</Text>
+              <Text style={styles.cardValue}>North-East Logistics Hub</Text>
+            </View>
+          </View>
+        </View>
 
-        <div className="bg-card rounded-2xl p-5">
-          <div className="flex items-start gap-4">
-            <div className="w-12 h-12 bg-primary-soft rounded-xl flex items-center justify-center flex-shrink-0">
-              <Database className="w-6 h-6 text-primary" />
-            </div>
-            <div className="flex-1">
-              <h3 className="text-base mb-1 text-foreground">Storage Strategy</h3>
-              <p className="text-muted-foreground">Local Database (Offline-First)</p>
-            </div>
-          </div>
-        </div>
+        {/* Storage Strategy */}
+        <View style={styles.card}>
+          <View style={styles.row}>
+            <View style={styles.iconCirclePrimary}>
+              <Database size={22} color={theme.colors.primary} />
+            </View>
+            <View style={styles.infoCol}>
+              <Text style={styles.cardTitle}>Storage Strategy</Text>
+              <Text style={styles.cardValue}>Local Database (Offline-First)</Text>
+            </View>
+          </View>
+        </View>
 
-        <div className="bg-card rounded-2xl p-5">
-          <div className="flex items-start gap-4">
-            <div className="w-12 h-12 bg-primary-soft rounded-xl flex items-center justify-center flex-shrink-0">
-              <Info className="w-6 h-6 text-primary" />
-            </div>
-            <div className="flex-1">
-              <h3 className="text-base mb-1 text-foreground">App Version</h3>
-              <p className="text-muted-foreground">WarehouseFlow v1.0.0</p>
-            </div>
-          </div>
-        </div>
+        {/* App Version */}
+        <View style={styles.card}>
+          <View style={styles.row}>
+            <View style={styles.iconCirclePrimary}>
+              <Info size={22} color={theme.colors.primary} />
+            </View>
+            <View style={styles.infoCol}>
+              <Text style={styles.cardTitle}>App Version</Text>
+              <Text style={styles.cardValue}>WarehouseFlow v1.0.0 (Native Mobile)</Text>
+            </View>
+          </View>
+        </View>
 
-        <div className="bg-card rounded-2xl p-5">
-          <div className="flex items-start gap-4">
-            <div className="w-12 h-12 bg-primary-soft rounded-xl flex items-center justify-center flex-shrink-0">
-              <HelpCircle className="w-6 h-6 text-primary" />
-            </div>
-            <div className="flex-1">
-              <h3 className="text-base mb-1 text-foreground">Quick Help</h3>
-              <ul className="text-sm text-muted-foreground space-y-1.5 mt-2">
-                <li>• Use the + button to add new items</li>
-                <li>• Tap Add/Remove Stock to adjust quantities</li>
-                <li>• View analytics in the Statistics tab</li>
-                <li>• Items below minimum stock show low alerts</li>
-              </ul>
-            </div>
-          </div>
-        </div>
+        {/* Quick Help */}
+        <View style={styles.card}>
+          <View style={styles.row}>
+            <View style={styles.iconCirclePrimary}>
+              <HelpCircle size={22} color={theme.colors.primary} />
+            </View>
+            <View style={styles.infoCol}>
+              <Text style={styles.cardTitle}>Quick Help</Text>
+              <View style={styles.helpList}>
+                <Text style={styles.helpItem}>• Gunakan tombol + untuk menambah barang baru</Text>
+                <Text style={styles.helpItem}>• Tekan Masuk/Keluar untuk mengubah kuantitas</Text>
+                <Text style={styles.helpItem}>• Cek ringkasan di tab Statistics</Text>
+                <Text style={styles.helpItem}>• Notifikasi stok menipis muncul otomatis</Text>
+              </View>
+            </View>
+          </View>
+        </View>
 
         {/* Logout Button */}
         <Button
-          onClick={handleLogout}
           variant="destructive"
-          className="w-full h-12 text-base"
-          size="lg"
+          onPress={handleLogout}
+          style={styles.logoutBtn}
         >
-          <LogOut className="w-5 h-5 mr-2" />
-          Logout
+          <LogOut size={18} color={theme.colors.white} style={styles.logoutIcon} />
+          <Text style={styles.logoutText}>Logout</Text>
         </Button>
-      </div>
+      </View>
 
       {/* Footer Info */}
-      <div className="mt-8 text-center">
-        <p className="text-sm text-muted-foreground">
-          © 2026 WarehouseFlow
-        </p>
-        <p className="text-xs text-muted-foreground/70 mt-1">
-          International Logistics Solutions
-        </p>
-      </div>
-    </div>
+      <View style={styles.footer}>
+        <Text style={styles.copyright}>© 2026 WarehouseFlow</Text>
+        <Text style={styles.company}>International Logistics Solutions</Text>
+      </View>
+    </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+    backgroundColor: theme.colors.background,
+  },
+  content: {
+    padding: 16,
+    paddingBottom: 40,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 20,
+    marginTop: 8,
+  },
+  headerIconCircle: {
+    width: 52,
+    height: 52,
+    borderRadius: 16,
+    backgroundColor: theme.colors.primarySoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  headerTextCol: {
+    flex: 1,
+  },
+  headerTitle: {
+    fontSize: theme.typography.font2xl,
+    fontWeight: '800',
+    color: theme.colors.foreground,
+  },
+  headerSubtitle: {
+    fontSize: theme.typography.fontSm,
+    color: theme.colors.mutedForeground,
+    marginTop: 2,
+  },
+  optionsList: {
+    gap: 12,
+  },
+  card: {
+    backgroundColor: theme.colors.card,
+    borderRadius: theme.radii.lg,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 14,
+  },
+  iconCircleInfo: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: theme.colors.infoSoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  iconCirclePrimary: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: theme.colors.primarySoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  infoCol: {
+    flex: 1,
+  },
+  cardTitle: {
+    fontSize: theme.typography.fontBase,
+    fontWeight: '700',
+    color: theme.colors.foreground,
+    marginBottom: 4,
+  },
+  cardValue: {
+    fontSize: theme.typography.fontSm,
+    color: theme.colors.mutedForeground,
+  },
+  cardSubValue: {
+    fontSize: theme.typography.fontXs,
+    color: theme.colors.mutedForeground,
+    marginTop: 2,
+    opacity: 0.8,
+  },
+  helpList: {
+    marginTop: 6,
+    gap: 4,
+  },
+  helpItem: {
+    fontSize: theme.typography.fontXs,
+    color: theme.colors.mutedForeground,
+    lineHeight: 18,
+  },
+  logoutBtn: {
+    height: 50,
+    marginTop: 8,
+  },
+  logoutIcon: {
+    marginRight: 8,
+  },
+  logoutText: {
+    color: theme.colors.white,
+    fontWeight: '700',
+    fontSize: theme.typography.fontBase,
+  },
+  footer: {
+    marginTop: 32,
+    alignItems: 'center',
+  },
+  copyright: {
+    fontSize: theme.typography.fontSm,
+    color: theme.colors.mutedForeground,
+  },
+  company: {
+    fontSize: theme.typography.fontXs,
+    color: theme.colors.mutedForeground,
+    opacity: 0.7,
+    marginTop: 4,
+  },
+});

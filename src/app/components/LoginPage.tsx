@@ -1,16 +1,25 @@
-import { useState } from 'react';
-import { useNavigate, Link } from 'react-router';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
+import { useRouter, Link } from 'expo-router';
 import { useAuth } from '../context/AuthContext';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
-import { LogIn } from 'lucide-react';
-import { toast } from 'sonner';
+import { Button } from '@/components/ui/Button';
+import { TextField } from '@/components/ui/TextField';
+import { Label } from '@/components/ui/Label';
+import { LogIn } from 'lucide-react-native';
+import { toast } from '@/components/ui/Toast';
 import { HeroBanner } from './HeroBanner';
 import loginBg from '@/assets/bulan-jatuh4.png';
+import { theme } from '../../theme';
 
 export function LoginPage() {
-  const navigate = useNavigate();
+  const router = useRouter();
   const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
@@ -18,97 +27,155 @@ export function LoginPage() {
   });
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const handleSubmit = async () => {
     if (!formData.email || !formData.password) {
-      toast.error('Please fill in all fields');
+      toast.error('Harap isi semua kolom');
       return;
     }
 
     setIsLoading(true);
-    const success = await login(formData.email, formData.password);
+    const success = await login(formData.email.trim(), formData.password);
     setIsLoading(false);
 
     if (success) {
-      toast.success('Welcome back!');
-      navigate('/');
+      toast.success('Selamat datang kembali!');
+      router.replace('/');
     } else {
-      toast.error('Invalid email or password');
+      toast.error('Email atau password salah');
     }
   };
 
   return (
-    <div className="app-shell">
-      <div className="app-content flex flex-col">
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      style={styles.container}
+    >
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
+      >
         {/* Header Image */}
         <HeroBanner
           imageSrc={loginBg}
           title="InvyDrop"
           subtitle="North-East Logistics Hub"
-          className="h-56 rounded-b-3xl flex-shrink-0"
-          contentClassName="justify-center px-6"
         />
 
         {/* Login Form */}
-        <div className="flex-1 px-6 py-8">
-          <div className="mb-8">
-            <h2 className="text-2xl mb-2">Welcome Back</h2>
-            <p className="text-muted-foreground">Sign in to access your inventory</p>
-          </div>
+        <View style={styles.formContainer}>
+          <View style={styles.titleSection}>
+            <Text style={styles.heading}>Welcome Back</Text>
+            <Text style={styles.subheading}>Sign in to access your inventory</Text>
+          </View>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div>
-              <Label htmlFor="email" className="text-base">Email Address</Label>
-              <Input
-                id="email"
-                type="email"
+          <View style={styles.formFields}>
+            <View style={styles.fieldGroup}>
+              <Label>Email Address</Label>
+              <TextField
+                keyboardType="email-address"
+                autoCapitalize="none"
                 value={formData.email}
-                onChange={(e) =>
-                  setFormData({ ...formData, email: e.target.value })
-                }
+                onChangeText={email => setFormData(prev => ({ ...prev, email }))}
                 placeholder="your.email@company.com"
-                className="mt-2 h-12 text-base"
               />
-            </div>
+            </View>
 
-            <div>
-              <Label htmlFor="password" className="text-base">Password</Label>
-              <Input
-                id="password"
+            <View style={styles.fieldGroup}>
+              <Label>Password</Label>
+              <TextField
                 type="password"
                 value={formData.password}
-                onChange={(e) =>
-                  setFormData({ ...formData, password: e.target.value })
-                }
+                onChangeText={password => setFormData(prev => ({ ...prev, password }))}
                 placeholder="Enter your password"
-                className="mt-2 h-12 text-base"
               />
-            </div>
+            </View>
 
             <Button
-              type="submit"
-              className="w-full bg-primary hover:bg-primary-hover h-12 text-base"
-              disabled={isLoading}
+              onPress={handleSubmit}
+              loading={isLoading}
+              style={styles.submitBtn}
             >
-              <LogIn className="w-5 h-5 mr-2" />
-              {isLoading ? 'Signing in...' : 'Sign In'}
+              <LogIn size={18} color={theme.colors.white} style={styles.btnIcon} />
+              <Text style={styles.submitBtnText}>
+                {isLoading ? 'Signing in...' : 'Sign In'}
+              </Text>
             </Button>
-          </form>
+          </View>
 
-          <div className="mt-8 text-center">
-            <p className="text-base text-muted-foreground">
+          <View style={styles.footerLink}>
+            <Text style={styles.footerText}>
               Don't have an account?{' '}
-              <Link
-                to="/signup"
-                className="text-primary hover:text-primary-hover font-medium"
-              >
-                Sign up
-              </Link>
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
+            </Text>
+            <Link href="/signup" style={styles.linkText}>
+              <Text style={styles.linkHighlight}>Sign up</Text>
+            </Link>
+          </View>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: theme.colors.background,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingBottom: 40,
+  },
+  formContainer: {
+    paddingHorizontal: 24,
+    paddingTop: 28,
+  },
+  titleSection: {
+    marginBottom: 24,
+  },
+  heading: {
+    fontSize: theme.typography.font2xl,
+    fontWeight: '800',
+    color: theme.colors.foreground,
+    marginBottom: 4,
+  },
+  subheading: {
+    fontSize: theme.typography.fontBase,
+    color: theme.colors.mutedForeground,
+  },
+  formFields: {
+    gap: 16,
+  },
+  fieldGroup: {
+    gap: 4,
+  },
+  submitBtn: {
+    height: 52,
+    marginTop: 8,
+  },
+  btnIcon: {
+    marginRight: 8,
+  },
+  submitBtnText: {
+    color: theme.colors.white,
+    fontWeight: '700',
+    fontSize: theme.typography.fontBase,
+  },
+  footerLink: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 32,
+  },
+  footerText: {
+    fontSize: theme.typography.fontBase,
+    color: theme.colors.mutedForeground,
+  },
+  linkText: {
+    paddingVertical: 4,
+  },
+  linkHighlight: {
+    fontSize: theme.typography.fontBase,
+    fontWeight: '700',
+    color: theme.colors.primary,
+  },
+});

@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
 import { useInventory } from '../context/InventoryContext';
 import {
   Dialog,
@@ -6,11 +7,12 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from './ui/dialog';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
-import { Button } from './ui/button';
-import { toast } from 'sonner';
+} from '@/components/ui/Dialog';
+import { TextField } from '@/components/ui/TextField';
+import { Label } from '@/components/ui/Label';
+import { Button } from '@/components/ui/Button';
+import { toast } from '@/components/ui/Toast';
+import { theme } from '../../theme';
 
 interface AddItemDialogProps {
   open: boolean;
@@ -38,9 +40,7 @@ export function AddItemDialog({ open, onOpenChange, initialCode }: AddItemDialog
     }
   }, [open, initialCode]);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const handleSubmit = () => {
     if (
       !formData.name ||
       !formData.category ||
@@ -52,8 +52,8 @@ export function AddItemDialog({ open, onOpenChange, initialCode }: AddItemDialog
       return;
     }
 
-    const quantity = parseInt(formData.quantity);
-    const minStock = parseInt(formData.minStock);
+    const quantity = parseInt(formData.quantity, 10);
+    const minStock = parseInt(formData.minStock, 10);
 
     if (isNaN(quantity) || quantity < 0) {
       toast.error('Masukkan jumlah stok yang valid');
@@ -65,7 +65,6 @@ export function AddItemDialog({ open, onOpenChange, initialCode }: AddItemDialog
       return;
     }
 
-    // Check code uniqueness if provided
     const trimmedCode = formData.code.trim();
     if (trimmedCode) {
       const codeExists = items.some(
@@ -104,108 +103,122 @@ export function AddItemDialog({ open, onOpenChange, initialCode }: AddItemDialog
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
+      <DialogContent>
         <DialogHeader>
-          <DialogTitle className="text-xl">Tambah Barang Baru</DialogTitle>
+          <DialogTitle>Tambah Barang Baru</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit}>
-          <div className="space-y-4 py-3">
-            <div>
-              <div className="flex justify-between items-center">
-                <Label htmlFor="code" className="text-base">Kode Barang / SKU</Label>
-                <span className="text-xs text-muted-foreground">Opsional (Otomatis jika kosong)</span>
-              </div>
-              <Input
-                id="code"
-                value={formData.code}
-                onChange={e => handleChange('code', e.target.value)}
-                placeholder="Contoh: WH-AB1234 (atau kosongkan)"
-                className="mt-2 h-12 text-base font-mono uppercase"
+
+        <View style={styles.form}>
+          <View style={styles.fieldGroup}>
+            <View style={styles.labelRow}>
+              <Label>Kode Barang / SKU</Label>
+              <Text style={styles.optionalNote}>Opsional (Otomatis)</Text>
+            </View>
+            <TextField
+              value={formData.code}
+              onChangeText={val => handleChange('code', val)}
+              placeholder="Contoh: WH-AB1234 (atau kosongkan)"
+              autoCapitalize="characters"
+            />
+          </View>
+
+          <View style={styles.fieldGroup}>
+            <Label>Nama Barang *</Label>
+            <TextField
+              value={formData.name}
+              onChangeText={val => handleChange('name', val)}
+              placeholder="Masukkan nama barang"
+            />
+          </View>
+
+          <View style={styles.fieldGroup}>
+            <Label>Kategori *</Label>
+            <TextField
+              value={formData.category}
+              onChangeText={val => handleChange('category', val)}
+              placeholder="Contoh: Elektronik, Logistik, Bahan"
+            />
+          </View>
+
+          <View style={styles.twoColumnRow}>
+            <View style={styles.col}>
+              <Label>Stok Awal *</Label>
+              <TextField
+                keyboardType="numeric"
+                value={formData.quantity}
+                onChangeText={val => handleChange('quantity', val)}
+                placeholder="0"
               />
-            </div>
-
-            <div>
-              <Label htmlFor="name" className="text-base">Nama Barang *</Label>
-              <Input
-                id="name"
-                value={formData.name}
-                onChange={e => handleChange('name', e.target.value)}
-                placeholder="Masukkan nama barang"
-                className="mt-2 h-12 text-base"
-                required
+            </View>
+            <View style={styles.col}>
+              <Label>Batas Minimum *</Label>
+              <TextField
+                keyboardType="numeric"
+                value={formData.minStock}
+                onChangeText={val => handleChange('minStock', val)}
+                placeholder="0"
               />
-            </div>
+            </View>
+          </View>
 
-            <div>
-              <Label htmlFor="category" className="text-base">Kategori *</Label>
-              <Input
-                id="category"
-                value={formData.category}
-                onChange={e => handleChange('category', e.target.value)}
-                placeholder="Contoh: Elektronik, Logistik, Bahan"
-                className="mt-2 h-12 text-base"
-                required
-              />
-            </div>
+          <View style={styles.fieldGroup}>
+            <Label>Lokasi Rak / Aisle *</Label>
+            <TextField
+              value={formData.location}
+              onChangeText={val => handleChange('location', val)}
+              placeholder="Contoh: Aisle 3 - Bay B"
+            />
+          </View>
+        </View>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <Label htmlFor="quantity" className="text-base">Stok Awal *</Label>
-                <Input
-                  id="quantity"
-                  type="number"
-                  min="0"
-                  value={formData.quantity}
-                  onChange={e => handleChange('quantity', e.target.value)}
-                  placeholder="0"
-                  className="mt-2 h-12 text-base"
-                  required
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="minStock" className="text-base">Batas Minimum *</Label>
-                <Input
-                  id="minStock"
-                  type="number"
-                  min="0"
-                  value={formData.minStock}
-                  onChange={e => handleChange('minStock', e.target.value)}
-                  placeholder="0"
-                  className="mt-2 h-12 text-base"
-                  required
-                />
-              </div>
-            </div>
-
-            <div>
-              <Label htmlFor="location" className="text-base">Lokasi Rak / Aisle *</Label>
-              <Input
-                id="location"
-                value={formData.location}
-                onChange={e => handleChange('location', e.target.value)}
-                placeholder="Contoh: Aisle 3 - Bay B"
-                className="mt-2 h-12 text-base"
-                required
-              />
-            </div>
-          </div>
-
-          <DialogFooter className="gap-2 sm:gap-0 mt-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-              className="h-11"
-            >
-              Batal
-            </Button>
-            <Button type="submit" className="bg-primary hover:bg-primary-hover text-primary-foreground h-11">
-              Simpan Barang
-            </Button>
-          </DialogFooter>
-        </form>
+        <DialogFooter style={styles.footer}>
+          <Button
+            variant="outline"
+            onPress={() => onOpenChange(false)}
+            style={styles.btn}
+          >
+            Batal
+          </Button>
+          <Button onPress={handleSubmit} style={styles.btn}>
+            Simpan Barang
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
 }
+
+const styles = StyleSheet.create({
+  form: {
+    paddingVertical: theme.spacing.sm,
+  },
+  fieldGroup: {
+    marginBottom: theme.spacing.md,
+  },
+  labelRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 2,
+  },
+  optionalNote: {
+    fontSize: theme.typography.fontXs,
+    color: theme.colors.mutedForeground,
+  },
+  twoColumnRow: {
+    flexDirection: 'row',
+    gap: theme.spacing.md,
+    marginBottom: theme.spacing.md,
+  },
+  col: {
+    flex: 1,
+  },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: theme.spacing.sm,
+  },
+  btn: {
+    flex: 1,
+  },
+});

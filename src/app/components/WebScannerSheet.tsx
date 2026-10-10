@@ -1,7 +1,17 @@
-import { useEffect, useRef } from 'react';
-import { Html5Qrcode } from 'html5-qrcode';
-import { X } from 'lucide-react';
-import { toast } from 'sonner';
+import React, { useState } from 'react';
+import {
+  Modal,
+  View,
+  Text,
+  Pressable,
+  StyleSheet,
+  ActivityIndicator,
+  Platform,
+} from 'react-native';
+import { CameraView, useCameraPermissions } from 'expo-camera';
+import { X } from 'lucide-react-native';
+import { theme } from '../../theme';
+import { Button } from '@/components/ui/Button';
 
 interface WebScannerSheetProps {
   onScanSuccess: (code: string) => void;
@@ -9,114 +19,166 @@ interface WebScannerSheetProps {
 }
 
 export function WebScannerSheet({ onScanSuccess, onClose }: WebScannerSheetProps) {
-  const scannerRef = useRef<Html5Qrcode | null>(null);
-  const isStoppedRef = useRef(false);
+  const [permission, requestPermission] = useCameraPermissions();
+  const [isScanned, setIsScanned] = useState(false);
 
-  useEffect(() => {
-    const scannerId = 'web-scanner-reader';
-    const scanner = new Html5Qrcode(scannerId);
-    scannerRef.current = scanner;
-    isStoppedRef.current = false;
-
-    const startScanner = async () => {
-      try {
-        await scanner.start(
-          { facingMode: 'environment' },
-          {
-            fps: 10,
-            qrbox: 250,
-          },
-          async (decodedText) => {
-            if (isStoppedRef.current) return;
-            isStoppedRef.current = true;
-            try {
-              if (scanner.isScanning) {
-                await scanner.stop();
-              }
-              scanner.clear();
-            } catch (err) {
-              console.error('Error stopping web scanner:', err);
-            }
-            onScanSuccess(decodedText);
-          },
-          () => {
-            // Frame parse error ignored during continuous stream
-          }
-        );
-      } catch (err: any) {
-        console.error('Web scanner start error:', err);
-        toast.error('Tidak dapat mengakses kamera browser: ' + (err?.message || 'Pastikan izin kamera diizinkan'));
-        onClose();
-      }
-    };
-
-    // Small delay to ensure DOM is ready
-    const timer = setTimeout(() => {
-      startScanner();
-    }, 100);
-
-    return () => {
-      clearTimeout(timer);
-      isStoppedRef.current = true;
-      if (scanner.isScanning) {
-        scanner.stop().catch(console.error).finally(() => {
-          try {
-            scanner.clear();
-          } catch {}
-        });
-      } else {
-        try {
-          scanner.clear();
-        } catch {}
-      }
-    };
-  }, [onScanSuccess, onClose]);
-
-  const handleClose = async () => {
-    isStoppedRef.current = true;
-    if (scannerRef.current?.isScanning) {
-      try {
-        await scannerRef.current.stop();
-        scannerRef.current.clear();
-      } catch (err) {
-        console.error('Error stopping on close:', err);
-      }
-    }
-    onClose();
+  const handleBarcodeScanned = ({ data }: { data: string }) => {
+    if (isScanned) return;
+    setIsScanned(true);
+    onScanSuccess(data);
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black flex flex-col justify-between overflow-hidden">
-      {/* Top Header */}
-      <div className="pt-[calc(env(safe-area-inset-top)+1rem)] px-5 pb-3 flex items-center justify-between z-10">
-        <button
-          type="button"
-          onClick={handleClose}
-          aria-label="Tutup Scanner"
-          className="w-11 h-11 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white active:scale-95 transition-transform"
-        >
-          <X className="w-6 h-6" />
-        </button>
-        <p className="text-white text-base font-medium">Arahkan kamera ke QR code</p>
-        <div className="w-11" />
-      </div>
+    <Modal
+      visible
+      animationType="slide"
+      presentationStyle="fullScreen"
+      onRequestClose={onClose}
+    >
+      <View style={styles.container}>
+        {/* Header */}
+        <View style={styles.header}>
+          <Pressable
+            accessibilityRole="button"
+            onPress={onClose}
+            style={styles.closeButton}
+          >
+            <X size={24} color={theme.colors.white} />
+          </Pressable>
+          <Text style={styles.headerTitle}>Arahkan kamera ke QR code</Text>
+          <View style={styles.closePlaceholder} />
+        </View>
 
-      {/* Camera Viewfinder */}
-      <div className="flex-1 flex flex-col items-center justify-center px-6">
-        <div className="w-full max-w-[300px] aspect-square rounded-3xl overflow-hidden relative shadow-2xl border-2 border-primary/50 bg-neutral-900">
-          <div id="web-scanner-reader" className="w-full h-full" />
-        </div>
-        <p className="text-white/70 text-xs mt-6 text-center max-w-xs">
-          Posisikan kode QR di dalam bingkai scanner
-        </p>
-      </div>
+        {/* Camera Viewfinder */}
+        <View style={styles.viewfinderContainer}>
+          {!permission ? (
+            <ActivityIndicator size="large" color={theme.colors.primary} />
+          ) : !permission.granted ? (
+            <View style={styles.permissionCard}>
+              <Text style={styles.permissionText}>
+                Izin kamera diperlukan untuk memindai kode QR inventaris gudang.
+              </Text>
+              <Button onPress={requestPermission} style={styles.permissionButton}>
+                Izinkan Kamera
+              </Button>
+            </View>
+          ) : (
+            <View style={styles.cameraBox}>
+              <CameraView
+                style={StyleSheet.absoluteFill}
+                barcodeScannerSettings={{
+                  barcodeTypes: ['qr'],
+                }}
+                onBarcodeScanned={isScanned ? undefined : handleBarcodeScanned}
+              />
+              <View style={styles.reticle} pointerEvents="none" />
+            </View>
+          )}
 
-      {/* Bottom Safe area space */}
-      <div className="pb-[calc(env(safe-area-inset-bottom)+1.5rem)] px-6 text-center">
-        <span className="inline-block px-3 py-1 rounded-full bg-white/10 text-white/80 text-xs font-mono">
-          Warehouse Scanner
-        </span>
-      </div>
-    </div>
+          <Text style={styles.helperText}>
+            Posisikan kode QR di dalam bingkai scanner
+          </Text>
+        </View>
+
+        {/* Footer */}
+        <View style={styles.footer}>
+          <View style={styles.badge}>
+            <Text style={styles.badgeText}>Warehouse Scanner</Text>
+          </View>
+        </View>
+      </View>
+    </Modal>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#000000',
+    justifyContent: 'space-between',
+  },
+  header: {
+    paddingTop: 54,
+    paddingHorizontal: 20,
+    paddingBottom: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    zIndex: 10,
+  },
+  closeButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  closePlaceholder: {
+    width: 44,
+  },
+  headerTitle: {
+    color: '#FFFFFF',
+    fontSize: theme.typography.fontBase,
+    fontWeight: '600',
+  },
+  viewfinderContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 24,
+  },
+  cameraBox: {
+    width: 280,
+    height: 280,
+    borderRadius: 24,
+    overflow: 'hidden',
+    borderWidth: 2,
+    borderColor: theme.colors.primary,
+    backgroundColor: '#111111',
+    position: 'relative',
+  },
+  reticle: {
+    ...StyleSheet.absoluteFill,
+    borderWidth: 2,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+    borderRadius: 22,
+  },
+  helperText: {
+    color: 'rgba(255, 255, 255, 0.7)',
+    fontSize: theme.typography.fontSm,
+    marginTop: 24,
+    textAlign: 'center',
+  },
+  permissionCard: {
+    backgroundColor: theme.colors.card,
+    borderRadius: theme.radii.lg,
+    padding: theme.spacing.lg,
+    alignItems: 'center',
+    maxWidth: 320,
+  },
+  permissionText: {
+    fontSize: theme.typography.fontBase,
+    color: theme.colors.foreground,
+    textAlign: 'center',
+    marginBottom: theme.spacing.md,
+  },
+  permissionButton: {
+    width: '100%',
+  },
+  footer: {
+    paddingBottom: 40,
+    alignItems: 'center',
+  },
+  badge: {
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    borderRadius: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  badgeText: {
+    color: 'rgba(255, 255, 255, 0.8)',
+    fontSize: theme.typography.fontXs,
+    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+  },
+});

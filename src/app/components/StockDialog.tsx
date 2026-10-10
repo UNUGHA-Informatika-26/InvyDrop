@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
 import { useInventory } from '../context/InventoryContext';
 import {
   Dialog,
@@ -6,11 +7,12 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from './ui/dialog';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
-import { Button } from './ui/button';
-import { toast } from 'sonner';
+} from '@/components/ui/Dialog';
+import { TextField } from '@/components/ui/TextField';
+import { Label } from '@/components/ui/Label';
+import { Button } from '@/components/ui/Button';
+import { toast } from '@/components/ui/Toast';
+import { theme } from '../../theme';
 
 interface StockDialogProps {
   open: boolean;
@@ -32,112 +34,163 @@ export function StockDialog({
   const { addStock, removeStock } = useInventory();
   const [quantity, setQuantity] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const qty = parseInt(quantity);
+  const handleSubmit = () => {
+    const qty = parseInt(quantity, 10);
 
     if (isNaN(qty) || qty <= 0) {
-      toast.error('Please enter a valid quantity');
+      toast.error('Masukkan jumlah yang valid');
       return;
     }
 
     if (mode === 'remove' && qty > currentStock) {
-      toast.error(`Cannot remove more than current stock (${currentStock})`);
+      toast.error(`Jumlah keluar melebihi stok yang ada (${currentStock})`);
       return;
     }
 
     if (mode === 'add') {
       addStock(itemId, qty);
-      toast.success(`Added ${qty} units to ${itemName}`);
+      toast.success(`Berhasil menambah +${qty} unit ke ${itemName}`);
     } else {
       removeStock(itemId, qty);
-      toast.success(`Removed ${qty} units from ${itemName}`);
+      toast.success(`Berhasil mengeluarkan -${qty} unit dari ${itemName}`);
     }
 
     setQuantity('');
     onOpenChange(false);
   };
 
-  const handleOpenChange = (open: boolean) => {
-    if (!open) {
+  const handleOpenChange = (isOpen: boolean) => {
+    if (!isOpen) {
       setQuantity('');
     }
-    onOpenChange(open);
+    onOpenChange(isOpen);
   };
+
+  const parsedQty = parseInt(quantity, 10);
+  const isValidQty = !isNaN(parsedQty) && parsedQty > 0;
+  const newStock = mode === 'add' ? currentStock + (isValidQty ? parsedQty : 0) : currentStock - (isValidQty ? parsedQty : 0);
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent>
         <DialogHeader>
-          <DialogTitle className="text-xl">
-            {mode === 'add' ? 'Add Stock' : 'Remove Stock'}
+          <DialogTitle>
+            {mode === 'add' ? 'Barang Masuk (Tambah Stok)' : 'Barang Keluar (Kurang Stok)'}
           </DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit}>
-          <div className="space-y-4 py-4">
-            <div className="bg-muted p-4 rounded-xl">
-              <p className="text-sm text-muted-foreground mb-2">
-                <span className="block mb-1 text-base">{itemName}</span>
-                <span className="text-muted-foreground">
-                  Current Stock: <span className="font-semibold">{currentStock}</span>
-                </span>
-              </p>
-            </div>
 
-            <div>
-              <Label htmlFor="quantity" className="text-base">
-                Quantity to {mode === 'add' ? 'Add' : 'Remove'}
-              </Label>
-              <Input
-                id="quantity"
-                type="number"
-                min="1"
-                max={mode === 'remove' ? currentStock : undefined}
-                value={quantity}
-                onChange={e => setQuantity(e.target.value)}
-                placeholder="Enter quantity"
-                className="mt-2 h-12 text-base"
-                autoFocus
-              />
-            </div>
+        <View style={styles.body}>
+          {/* Current Stock Banner */}
+          <View style={styles.stockBanner}>
+            <Text style={styles.itemNameText}>{itemName}</Text>
+            <Text style={styles.currentStockText}>
+              Stok Saat Ini: <Text style={styles.boldStock}>{currentStock}</Text> unit
+            </Text>
+          </View>
 
-            {quantity && (
-              <div className="bg-primary-soft p-4 rounded-xl">
-                <p className="text-sm text-muted-foreground">
-                  New stock level:{' '}
-                  <span className="font-semibold text-base text-primary">
-                    {mode === 'add'
-                      ? currentStock + parseInt(quantity)
-                      : currentStock - parseInt(quantity)}
-                  </span>
-                </p>
-              </div>
-            )}
-          </div>
+          {/* Input field */}
+          <View style={styles.inputGroup}>
+            <Label>
+              Jumlah yang akan {mode === 'add' ? 'Ditambahkan' : 'Dikeluarkan'}
+            </Label>
+            <TextField
+              keyboardType="numeric"
+              value={quantity}
+              onChangeText={setQuantity}
+              placeholder="Masukkan jumlah unit"
+              autoFocus
+            />
+          </View>
 
-          <DialogFooter className="gap-2 sm:gap-0">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => handleOpenChange(false)}
-              className="h-11"
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              className={
-                mode === 'add'
-                  ? 'bg-success hover:bg-success/80 text-white h-11'
-                  : 'bg-primary hover:bg-primary-hover h-11'
-              }
-            >
-              {mode === 'add' ? 'Add Stock' : 'Remove Stock'}
-            </Button>
-          </DialogFooter>
-        </form>
+          {/* Preview of new stock */}
+          {isValidQty && (
+            <View style={styles.previewBox}>
+              <Text style={styles.previewLabel}>
+                Estimasi stok baru:{' '}
+                <Text style={styles.previewValue}>
+                  {newStock} unit
+                </Text>
+              </Text>
+            </View>
+          )}
+        </View>
+
+        <DialogFooter style={styles.footer}>
+          <Button
+            variant="outline"
+            onPress={() => handleOpenChange(false)}
+            style={styles.btn}
+          >
+            Batal
+          </Button>
+          <Button
+            onPress={handleSubmit}
+            style={[
+              styles.btn,
+              mode === 'add' ? styles.addBtn : styles.removeBtn,
+            ]}
+          >
+            {mode === 'add' ? 'Simpan (+)' : 'Keluarkan (−)'}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
 }
+
+const styles = StyleSheet.create({
+  body: {
+    paddingVertical: theme.spacing.md,
+  },
+  stockBanner: {
+    backgroundColor: theme.colors.muted,
+    padding: theme.spacing.md,
+    borderRadius: theme.radii.md,
+    marginBottom: theme.spacing.md,
+  },
+  itemNameText: {
+    fontSize: theme.typography.fontBase,
+    fontWeight: '700',
+    color: theme.colors.foreground,
+    marginBottom: 4,
+  },
+  currentStockText: {
+    fontSize: theme.typography.fontSm,
+    color: theme.colors.mutedForeground,
+  },
+  boldStock: {
+    fontWeight: '700',
+    color: theme.colors.primary,
+  },
+  inputGroup: {
+    marginBottom: theme.spacing.md,
+  },
+  previewBox: {
+    backgroundColor: theme.colors.primarySoft,
+    padding: theme.spacing.md,
+    borderRadius: theme.radii.md,
+  },
+  previewLabel: {
+    fontSize: theme.typography.fontSm,
+    color: theme.colors.mutedForeground,
+  },
+  previewValue: {
+    fontWeight: '700',
+    color: theme.colors.primary,
+    fontSize: theme.typography.fontBase,
+  },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: theme.spacing.sm,
+  },
+  btn: {
+    flex: 1,
+  },
+  addBtn: {
+    backgroundColor: theme.colors.success,
+  },
+  removeBtn: {
+    backgroundColor: theme.colors.primary,
+  },
+});

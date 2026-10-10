@@ -1,5 +1,6 @@
-import { useState } from 'react';
-import { Outlet } from 'react-router';
+import React, { useState } from 'react';
+import { View, StyleSheet } from 'react-native';
+import { Slot } from 'expo-router';
 import { BottomNav } from './BottomNav';
 import { useInventory, InventoryItem } from '../context/InventoryContext';
 import { useQrScanner } from '../../hooks/useQrScanner';
@@ -7,9 +8,14 @@ import { WebScannerSheet } from './WebScannerSheet';
 import { ScanDetailDrawer } from './ScanDetailDrawer';
 import { AddItemDialog } from './AddItemDialog';
 import { ItemQrDialog } from './ItemQrDialog';
-import { toast } from 'sonner';
+import { toast } from '@/components/ui/Toast';
+import { theme } from '../../theme';
 
-export function Layout() {
+interface LayoutProps {
+  children?: React.ReactNode;
+}
+
+export function Layout({ children }: LayoutProps) {
   const { items, isAddDialogOpen, setIsAddDialogOpen, initialAddCode, openAddItem } = useInventory();
   const { scan, isWebScannerOpen, isScanning, handleWebScanSuccess, handleWebScanClose } = useQrScanner();
 
@@ -36,14 +42,8 @@ export function Layout() {
     } else {
       toast.error('Barang tidak ditemukan', {
         description: `Kode "${code}" belum terdaftar di inventaris`,
-        action: {
-          label: 'Tambah barang baru',
-          onClick: () => {
-            openAddItem(code);
-          },
-        },
-        duration: 5000,
       });
+      openAddItem(code);
     }
   };
 
@@ -60,13 +60,13 @@ export function Layout() {
   };
 
   return (
-    <div className="app-shell h-dvh flex flex-col overflow-hidden bg-background">
-      {/* Scrollable Main Content */}
-      <main className="flex-1 overflow-y-auto overflow-x-hidden pb-4">
-        <Outlet />
-      </main>
+    <View style={styles.shell}>
+      {/* Main Content Area */}
+      <View style={styles.mainContent}>
+        {children || <Slot />}
+      </View>
 
-      {/* Unified Bottom Navigation (hidden when scanner is open) */}
+      {/* Unified Bottom Navigation */}
       {!isScanning && (
         <BottomNav
           onAddClick={() => openAddItem()}
@@ -74,7 +74,7 @@ export function Layout() {
         />
       )}
 
-      {/* Web Scanner Fallback (Browser dev / non-native) */}
+      {/* Native Camera Scanner Modal */}
       {isWebScannerOpen && (
         <WebScannerSheet
           onScanSuccess={(code) => {
@@ -85,7 +85,7 @@ export function Layout() {
         />
       )}
 
-      {/* Quick Detail Bottom Sheet (Vaul Drawer) */}
+      {/* Quick Detail Bottom Sheet */}
       <ScanDetailDrawer
         open={isQuickDetailOpen}
         onOpenChange={setIsQuickDetailOpen}
@@ -106,6 +106,16 @@ export function Layout() {
         onOpenChange={setIsQrDialogOpen}
         item={qrItem}
       />
-    </div>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  shell: {
+    flex: 1,
+    backgroundColor: theme.colors.background,
+  },
+  mainContent: {
+    flex: 1,
+  },
+});

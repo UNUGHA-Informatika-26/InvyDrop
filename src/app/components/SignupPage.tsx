@@ -1,16 +1,25 @@
-import { useState } from 'react';
-import { useNavigate, Link } from 'react-router';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
+import { useRouter, Link } from 'expo-router';
 import { useAuth } from '../context/AuthContext';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
-import { UserPlus } from 'lucide-react';
-import { toast } from 'sonner';
+import { Button } from '@/components/ui/Button';
+import { TextField } from '@/components/ui/TextField';
+import { Label } from '@/components/ui/Label';
+import { UserPlus } from 'lucide-react-native';
+import { toast } from '@/components/ui/Toast';
 import { HeroBanner } from './HeroBanner';
 import signupBg from '@/assets/bulan-jatuh.png';
+import { theme } from '../../theme';
 
 export function SignupPage() {
-  const navigate = useNavigate();
+  const router = useRouter();
   const { signup } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
@@ -20,135 +29,190 @@ export function SignupPage() {
   });
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const handleSubmit = async () => {
     if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
-      toast.error('Please fill in all fields');
+      toast.error('Harap isi semua kolom');
       return;
     }
 
     if (formData.password !== formData.confirmPassword) {
-      toast.error('Passwords do not match');
+      toast.error('Konfirmasi password tidak cocok');
       return;
     }
 
     if (formData.password.length < 6) {
-      toast.error('Password must be at least 6 characters');
+      toast.error('Password minimal 6 karakter');
       return;
     }
 
     setIsLoading(true);
-    const success = await signup(formData.name, formData.email, formData.password);
+    const success = await signup(
+      formData.name.trim(),
+      formData.email.trim(),
+      formData.password
+    );
     setIsLoading(false);
 
     if (success) {
-      toast.success('Account created successfully!');
-      navigate('/');
+      toast.success('Akun berhasil dibuat!');
+      router.replace('/');
     } else {
-      toast.error('Email already exists');
+      toast.error('Email sudah terdaftar');
     }
   };
 
   return (
-    <div className="app-shell">
-      <div className="app-content flex flex-col">
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      style={styles.container}
+    >
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
+      >
         {/* Header Image */}
         <HeroBanner
           imageSrc={signupBg}
           title="InvyDrop"
           subtitle="North-East Logistics Hub"
-          className="h-56 rounded-b-3xl flex-shrink-0"
-          contentClassName="justify-center px-6"
         />
 
         {/* Signup Form */}
-        <div className="flex-1 px-6 py-6">
-          <div className="mb-6">
-            <h2 className="text-2xl mb-2">Create Account</h2>
-            <p className="text-muted-foreground">Join the warehouse management team</p>
-          </div>
+        <View style={styles.formContainer}>
+          <View style={styles.titleSection}>
+            <Text style={styles.heading}>Create Account</Text>
+            <Text style={styles.subheading}>Join the warehouse management team</Text>
+          </View>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <Label htmlFor="name" className="text-base">Full Name</Label>
-              <Input
-                id="name"
-                type="text"
+          <View style={styles.formFields}>
+            <View style={styles.fieldGroup}>
+              <Label>Full Name</Label>
+              <TextField
                 value={formData.name}
-                onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
-                }
+                onChangeText={name => setFormData(prev => ({ ...prev, name }))}
                 placeholder="John Smith"
-                className="mt-2 h-12 text-base"
               />
-            </div>
+            </View>
 
-            <div>
-              <Label htmlFor="email" className="text-base">Email Address</Label>
-              <Input
-                id="email"
-                type="email"
+            <View style={styles.fieldGroup}>
+              <Label>Email Address</Label>
+              <TextField
+                keyboardType="email-address"
+                autoCapitalize="none"
                 value={formData.email}
-                onChange={(e) =>
-                  setFormData({ ...formData, email: e.target.value })
-                }
+                onChangeText={email => setFormData(prev => ({ ...prev, email }))}
                 placeholder="your.email@company.com"
-                className="mt-2 h-12 text-base"
               />
-            </div>
+            </View>
 
-            <div>
-              <Label htmlFor="password" className="text-base">Password</Label>
-              <Input
-                id="password"
+            <View style={styles.fieldGroup}>
+              <Label>Password</Label>
+              <TextField
                 type="password"
                 value={formData.password}
-                onChange={(e) =>
-                  setFormData({ ...formData, password: e.target.value })
-                }
-                placeholder="At least 6 characters"
-                className="mt-2 h-12 text-base"
+                onChangeText={password => setFormData(prev => ({ ...prev, password }))}
+                placeholder="Minimal 6 karakter"
               />
-            </div>
+            </View>
 
-            <div>
-              <Label htmlFor="confirmPassword" className="text-base">Confirm Password</Label>
-              <Input
-                id="confirmPassword"
+            <View style={styles.fieldGroup}>
+              <Label>Confirm Password</Label>
+              <TextField
                 type="password"
                 value={formData.confirmPassword}
-                onChange={(e) =>
-                  setFormData({ ...formData, confirmPassword: e.target.value })
+                onChangeText={confirmPassword =>
+                  setFormData(prev => ({ ...prev, confirmPassword }))
                 }
-                placeholder="Re-enter your password"
-                className="mt-2 h-12 text-base"
+                placeholder="Ulangi password"
               />
-            </div>
+            </View>
 
             <Button
-              type="submit"
-              className="w-full bg-primary hover:bg-primary-hover h-12 text-base mt-6"
-              disabled={isLoading}
+              onPress={handleSubmit}
+              loading={isLoading}
+              style={styles.submitBtn}
             >
-              <UserPlus className="w-5 h-5 mr-2" />
-              {isLoading ? 'Creating account...' : 'Create Account'}
+              <UserPlus size={18} color={theme.colors.white} style={styles.btnIcon} />
+              <Text style={styles.submitBtnText}>
+                {isLoading ? 'Creating account...' : 'Create Account'}
+              </Text>
             </Button>
-          </form>
+          </View>
 
-          <div className="mt-6 text-center pb-6">
-            <p className="text-base text-muted-foreground">
+          <View style={styles.footerLink}>
+            <Text style={styles.footerText}>
               Already have an account?{' '}
-              <Link
-                to="/login"
-                className="text-primary hover:text-primary-hover font-medium"
-              >
-                Sign in
-              </Link>
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
+            </Text>
+            <Link href="/login" style={styles.linkText}>
+              <Text style={styles.linkHighlight}>Sign in</Text>
+            </Link>
+          </View>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: theme.colors.background,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingBottom: 40,
+  },
+  formContainer: {
+    paddingHorizontal: 24,
+    paddingTop: 24,
+  },
+  titleSection: {
+    marginBottom: 20,
+  },
+  heading: {
+    fontSize: theme.typography.font2xl,
+    fontWeight: '800',
+    color: theme.colors.foreground,
+    marginBottom: 4,
+  },
+  subheading: {
+    fontSize: theme.typography.fontBase,
+    color: theme.colors.mutedForeground,
+  },
+  formFields: {
+    gap: 14,
+  },
+  fieldGroup: {
+    gap: 4,
+  },
+  submitBtn: {
+    height: 52,
+    marginTop: 10,
+  },
+  btnIcon: {
+    marginRight: 8,
+  },
+  submitBtnText: {
+    color: theme.colors.white,
+    fontWeight: '700',
+    fontSize: theme.typography.fontBase,
+  },
+  footerLink: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 28,
+  },
+  footerText: {
+    fontSize: theme.typography.fontBase,
+    color: theme.colors.mutedForeground,
+  },
+  linkText: {
+    paddingVertical: 4,
+  },
+  linkHighlight: {
+    fontSize: theme.typography.fontBase,
+    fontWeight: '700',
+    color: theme.colors.primary,
+  },
+});

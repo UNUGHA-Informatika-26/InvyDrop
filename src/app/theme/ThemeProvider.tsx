@@ -1,58 +1,46 @@
-import React, { useMemo } from 'react';
-import { ThemeProvider as NextThemesProvider, useTheme } from 'next-themes';
-import { createTheme, ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
+import React, { createContext, useContext, useState, useMemo } from 'react';
+import { theme as defaultTheme, Theme } from '../../theme';
 
-function MuiThemeBridge({ children }: { children: React.ReactNode }) {
-  const { resolvedTheme } = useTheme();
-  const isDark = resolvedTheme === 'dark';
-
-  const muiTheme = useMemo(() => {
-    return createTheme({
-      palette: {
-        mode: isDark ? 'dark' : 'light',
-        primary: {
-          main: '#D97757',
-          dark: '#C15F3C',
-          contrastText: '#FFFFFF',
-        },
-        secondary: {
-          main: isDark ? '#2A2927' : '#F0EEE6',
-          contrastText: isDark ? '#FAF9F5' : '#141413',
-        },
-        background: {
-          default: isDark ? '#141413' : '#FAF9F5',
-          paper: isDark ? '#1F1E1D' : '#FFFFFF',
-        },
-        text: {
-          primary: isDark ? '#FAF9F5' : '#141413',
-          secondary: isDark ? '#B0AEA5' : '#5E5D59',
-        },
-        error: {
-          main: isDark ? '#D4604F' : '#B5483A',
-        },
-        success: {
-          main: '#788C5D',
-        },
-        warning: {
-          main: '#D4A24C',
-        },
-        info: {
-          main: '#6A9BCB',
-        },
-      },
-      shape: {
-        borderRadius: 10,
-      },
-    });
-  }, [isDark]);
-
-  return <MuiThemeProvider theme={muiTheme}>{children}</MuiThemeProvider>;
+interface ThemeContextType {
+  theme: Theme;
+  isDark: boolean;
+  toggleTheme: () => void;
 }
 
+const ThemeContext = createContext<ThemeContextType>({
+  theme: defaultTheme,
+  isDark: false,
+  toggleTheme: () => {},
+});
+
 export function AppThemeProvider({ children }: { children: React.ReactNode }) {
+  const [isDark, setIsDark] = useState(false);
+
+  const toggleTheme = () => setIsDark(prev => !prev);
+
+  const currentTheme = useMemo(() => {
+    if (!isDark) return defaultTheme;
+    return {
+      ...defaultTheme,
+      colors: {
+        ...defaultTheme.colors,
+        background: '#141413',
+        card: '#1F1E1D',
+        border: '#2A2927',
+        foreground: '#FAF9F5',
+        muted: '#2A2927',
+        mutedForeground: '#B0AEA5',
+      },
+    };
+  }, [isDark]);
+
   return (
-    <NextThemesProvider attribute="class" defaultTheme="light" enableSystem>
-      <MuiThemeBridge>{children}</MuiThemeBridge>
-    </NextThemesProvider>
+    <ThemeContext.Provider value={{ theme: currentTheme, isDark, toggleTheme }}>
+      {children}
+    </ThemeContext.Provider>
   );
+}
+
+export function useAppTheme() {
+  return useContext(ThemeContext);
 }

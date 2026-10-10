@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode, useRef } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export interface InventoryItem {
   id: string;
@@ -22,9 +23,14 @@ interface InventoryContextType {
   setIsAddDialogOpen: (open: boolean) => void;
   initialAddCode: string;
   openAddItem: (code?: string) => void;
+  isLoading: boolean;
 }
 
 const InventoryContext = createContext<InventoryContextType | undefined>(undefined);
+
+function generateId(): string {
+  return Date.now().toString(36) + Math.random().toString(36).substring(2);
+}
 
 export function generateItemCode(existingCodes: Set<string>): string {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -85,28 +91,9 @@ const SEED_ITEMS: InventoryItem[] = [
 ];
 
 export function InventoryProvider({ children }: { children: ReactNode }) {
-  const [items, setItems] = useState<InventoryItem[]>(() => {
-    const stored = localStorage.getItem('warehouse-inventory');
-    if (stored) {
-      try {
-        const parsed: InventoryItem[] = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          const codes = new Set(parsed.map(i => i.code).filter(Boolean) as string[]);
-          return parsed.map(item => {
-            if (!item.code) {
-              const newCode = generateItemCode(codes);
-              codes.add(newCode);
-              return { ...item, code: newCode };
-            }
-            return item;
-          });
-        }
-      } catch (e) {
-        console.error('Error loading warehouse inventory:', e);
-      }
-    }
-    return SEED_ITEMS;
-  });
+  const [items, setItems] = useState<InventoryItem[]>(SEED_ITEMS);
+  const [isLoading, setIsLoading] = useState(true);
+  const isInitialLoadRef = useRef(true);
 
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [initialAddCode, setInitialAddCode] = useState('');
@@ -117,7 +104,45 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
-    localStorage.setItem('warehouse-inventory', JSON.stringify(items));
+    let isMounted = true;
+    async function loadInventory() {
+      try {
+        const stored = await AsyncStorage.getItem('warehouse-inventory');
+        if (stored && isMounted) {
+          const parsed: InventoryItem[] = JSON.parse(stored);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            const codes = new Set(parsed.map(i => i.code).filter(Boolean) as string[]);
+            const formatted = parsed.map(item => {
+              if (!item.code) {
+                const newCode = generateItemCode(codes);
+                codes.add(newCode);
+                return { ...item, code: newCode };
+              }
+              return item;
+            });
+            setItems(formatted);
+          }
+        }
+      } catch (e) {
+        console.error('Error loading warehouse inventory:', e);
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+          isInitialLoadRef.current = false;
+        }
+      }
+    }
+    loadInventory();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (isInitialLoadRef.current) return;
+    AsyncStorage.setItem('warehouse-inventory', JSON.stringify(items)).catch(e =>
+      console.error('Error saving inventory:', e)
+    );
   }, [items]);
 
   const addItem = (item: Omit<InventoryItem, 'id' | 'createdAt'>) => {
@@ -127,7 +152,7 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
     const newItem: InventoryItem = {
       ...item,
       code: finalCode,
-      id: crypto.randomUUID(),
+      id: generateId(),
       createdAt: new Date().toISOString(),
     };
     setItems(prev => [...prev, newItem]);
@@ -174,6 +199,7 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
         setIsAddDialogOpen,
         initialAddCode,
         openAddItem,
+        isLoading,
       }}
     >
       {children}

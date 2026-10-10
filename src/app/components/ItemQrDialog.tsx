@@ -1,14 +1,17 @@
-import { QRCodeSVG } from 'qrcode.react';
+import React from 'react';
+import { View, Text, StyleSheet, Share } from 'react-native';
+import QRCodeSVG from 'react-native-qrcode-svg';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from './ui/dialog';
-import { Button } from './ui/button';
-import { Printer } from 'lucide-react';
+} from '@/components/ui/Dialog';
+import { Button } from '@/components/ui/Button';
+import { Printer } from 'lucide-react-native';
 import { InventoryItem } from '../context/InventoryContext';
+import { theme } from '../../theme';
 
 interface ItemQrDialogProps {
   open: boolean;
@@ -21,57 +24,127 @@ export function ItemQrDialog({ open, onOpenChange, item }: ItemQrDialogProps) {
 
   const qrValue = item.code || item.id;
 
-  const handlePrint = () => {
-    window.print();
+  const handleShareOrPrint = async () => {
+    try {
+      await Share.share({
+        message: `Warehouse Item: ${item.name} | Code: ${qrValue} | Location: ${item.location} | Qty: ${item.quantity}`,
+        title: `QR Code: ${item.name}`,
+      });
+    } catch (e) {
+      console.error('Error sharing QR data:', e);
+    }
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-sm text-center">
+      <DialogContent style={styles.dialogContent}>
         <DialogHeader>
-          <DialogTitle className="text-xl text-center">Kode QR Barang</DialogTitle>
+          <DialogTitle style={styles.headerTitle}>Kode QR Barang</DialogTitle>
         </DialogHeader>
 
-        {/* Printable QR Container */}
-        <div id="qr-print-area" className="flex flex-col items-center justify-center py-4 px-2">
-          {/* QR Code Container - Strictly black on white */}
-          <div className="bg-white p-4 rounded-2xl shadow-sm border border-border inline-block">
+        {/* QR Code Container */}
+        <View style={styles.qrWrapper}>
+          <View style={styles.qrCard}>
             <QRCodeSVG
               value={qrValue}
-              size={200}
-              level="M"
-              includeMargin={true}
-              bgColor="#FFFFFF"
-              fgColor="#000000"
+              size={180}
+              color="#000000"
+              backgroundColor="#FFFFFF"
             />
-          </div>
+          </View>
+        </View>
 
-          <h3 className="text-lg font-bold text-foreground mt-4 mb-0.5">{item.name}</h3>
-          <p className="font-mono text-sm font-semibold tracking-wider text-primary">{qrValue}</p>
-          <p className="text-xs text-muted-foreground mt-1">
+        {/* Item Info */}
+        <View style={styles.infoContainer}>
+          <Text style={styles.itemName} numberOfLines={2}>
+            {item.name}
+          </Text>
+          <Text style={styles.itemCode}>{qrValue}</Text>
+          <Text style={styles.itemMeta}>
             {item.category} • {item.location}
-          </p>
-        </div>
+          </Text>
+        </View>
 
-        <DialogFooter className="flex-row gap-2 justify-center sm:justify-center">
+        <DialogFooter style={styles.footer}>
           <Button
-            type="button"
             variant="outline"
-            onClick={() => onOpenChange(false)}
-            className="flex-1 h-11"
+            onPress={() => onOpenChange(false)}
+            style={styles.actionBtn}
           >
             Tutup
           </Button>
-          <Button
-            type="button"
-            onClick={handlePrint}
-            className="flex-1 bg-primary hover:bg-primary-hover text-primary-foreground h-11"
-          >
-            <Printer className="w-4 h-4 mr-2" />
-            Cetak
+          <Button onPress={handleShareOrPrint} style={styles.actionBtn}>
+            <Printer size={16} color={theme.colors.white} style={styles.iconSpacing} />
+            <Text style={styles.btnText}>Bagikan / Cetak</Text>
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
 }
+
+const styles = StyleSheet.create({
+  dialogContent: {
+    alignItems: 'center',
+    padding: theme.spacing.lg,
+  },
+  headerTitle: {
+    textAlign: 'center',
+  },
+  qrWrapper: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: theme.spacing.md,
+  },
+  qrCard: {
+    backgroundColor: '#FFFFFF',
+    padding: theme.spacing.lg,
+    borderRadius: theme.radii.lg,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  infoContainer: {
+    alignItems: 'center',
+    marginVertical: theme.spacing.sm,
+  },
+  itemName: {
+    fontSize: theme.typography.fontBase,
+    fontWeight: '700',
+    color: theme.colors.foreground,
+    textAlign: 'center',
+  },
+  itemCode: {
+    fontSize: theme.typography.fontSm,
+    fontWeight: '600',
+    fontFamily: 'monospace',
+    color: theme.colors.primary,
+    marginTop: 4,
+  },
+  itemMeta: {
+    fontSize: theme.typography.fontXs,
+    color: theme.colors.mutedForeground,
+    marginTop: 2,
+  },
+  footer: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: theme.spacing.sm,
+  },
+  actionBtn: {
+    flex: 1,
+  },
+  iconSpacing: {
+    marginRight: 6,
+  },
+  btnText: {
+    color: theme.colors.white,
+    fontWeight: '600',
+    fontSize: theme.typography.fontSm,
+  },
+});

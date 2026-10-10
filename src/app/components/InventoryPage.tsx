@@ -1,12 +1,21 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  Alert,
+  Pressable,
+} from 'react-native';
 import { useInventory, InventoryItem } from '../context/InventoryContext';
-import { AlertTriangle, Trash2, Plus, Minus, Package, QrCode } from 'lucide-react';
-import { Button } from './ui/button';
+import { AlertTriangle, Trash2, Plus, Minus, Package, QrCode } from 'lucide-react-native';
+import { Button } from '@/components/ui/Button';
 import { StockDialog } from './StockDialog';
 import { ItemQrDialog } from './ItemQrDialog';
 import { HeroBanner } from './HeroBanner';
 import warehouseImage from '@/assets/bulan-jatuh2.png';
-import { toast } from 'sonner';
+import { toast } from '@/components/ui/Toast';
+import { theme } from '../../theme';
 
 export function InventoryPage() {
   const { items, removeItem } = useInventory();
@@ -31,10 +40,21 @@ export function InventoryPage() {
   const lowStockCount = items.filter(item => item.quantity <= item.minStock).length;
 
   const handleRemoveItem = (id: string, name: string) => {
-    if (window.confirm(`Hapus "${name}" dari inventaris gudang?`)) {
-      removeItem(id);
-      toast.success(`${name} telah dihapus`);
-    }
+    Alert.alert(
+      'Hapus Barang',
+      `Hapus "${name}" dari inventaris gudang?`,
+      [
+        { text: 'Batal', style: 'cancel' },
+        {
+          text: 'Hapus',
+          style: 'destructive',
+          onPress: () => {
+            removeItem(id);
+            toast.success(`${name} telah dihapus`);
+          },
+        },
+      ]
+    );
   };
 
   const handleOpenStockDialog = (
@@ -57,163 +77,156 @@ export function InventoryPage() {
     setIsQrDialogOpen(true);
   };
 
-  return (
-    <div className="min-h-full bg-background pb-4">
+  const renderItem = ({ item }: { item: InventoryItem }) => {
+    const isLowStock = item.quantity <= item.minStock;
+    const isOutOfStock = item.quantity === 0;
+
+    return (
+      <View style={styles.itemCard}>
+        {/* Item Title, Code, & Badge */}
+        <View style={styles.cardHeader}>
+          <View style={styles.titleColumn}>
+            <View style={styles.titleRow}>
+              <Text style={styles.itemNameText} numberOfLines={1}>
+                {item.name}
+              </Text>
+              {item.code ? (
+                <View style={styles.codeTag}>
+                  <Text style={styles.codeTagText}>{item.code}</Text>
+                </View>
+              ) : null}
+            </View>
+            <Text style={styles.categoryLocationText}>
+              {item.category} • {item.location}
+            </Text>
+          </View>
+
+          {isLowStock ? (
+            <View style={styles.lowBadge}>
+              <AlertTriangle size={12} color={theme.colors.warning} />
+              <Text style={styles.lowBadgeText}>Low</Text>
+            </View>
+          ) : null}
+        </View>
+
+        {/* Stock Metrics */}
+        <View style={styles.metricsBox}>
+          <View>
+            <Text style={styles.metricLabel}>Stok Saat Ini</Text>
+            <Text style={styles.metricValue}>{item.quantity}</Text>
+          </View>
+          <View style={styles.metricRight}>
+            <Text style={styles.metricLabel}>Batas Minimum</Text>
+            <Text style={styles.metricSubValue}>{item.minStock} unit</Text>
+          </View>
+        </View>
+
+        {/* Action Buttons */}
+        <View style={styles.actionRow}>
+          <Button
+            size="sm"
+            onPress={() => handleOpenStockDialog(item.id, item.name, item.quantity, 'add')}
+            style={[styles.actionBtn, styles.masukBtn]}
+          >
+            <Plus size={14} color={theme.colors.white} style={styles.iconMargin} />
+            <Text style={styles.actionBtnWhiteText}>Masuk</Text>
+          </Button>
+
+          <Button
+            size="sm"
+            onPress={() => handleOpenStockDialog(item.id, item.name, item.quantity, 'remove')}
+            disabled={isOutOfStock}
+            style={[styles.actionBtn, styles.keluarBtn]}
+          >
+            <Minus size={14} color={theme.colors.white} style={styles.iconMargin} />
+            <Text style={styles.actionBtnWhiteText}>Keluar</Text>
+          </Button>
+
+          <Button
+            size="sm"
+            variant="outline"
+            onPress={() => handleOpenQrDialog(item)}
+            style={styles.iconBtn}
+          >
+            <QrCode size={16} color={theme.colors.foreground} />
+          </Button>
+
+          <Button
+            size="sm"
+            variant="destructive"
+            onPress={() => handleRemoveItem(item.id, item.name)}
+            style={styles.iconBtn}
+          >
+            <Trash2 size={16} color={theme.colors.white} />
+          </Button>
+        </View>
+      </View>
+    );
+  };
+
+  const ListHeader = (
+    <View>
       {/* Header Banner */}
       <HeroBanner
         imageSrc={warehouseImage}
         title="InvyDrop"
         subtitle="Sistem Manajemen Gudang & Logistik"
-        className="h-48 rounded-b-3xl"
-        contentClassName="px-6"
       />
 
       {/* Stats Cards */}
-      <div className="px-5 -mt-6 mb-6">
-        <div className="grid grid-cols-2 gap-3">
-          <div className="bg-card rounded-2xl p-4 shadow-sm border border-border">
-            <div className="flex justify-center mb-2">
-              <div className="w-12 h-12 bg-primary-soft rounded-xl flex items-center justify-center">
-                <Package className="w-6 h-6 text-primary" />
-              </div>
-            </div>
-            <div className="text-2xl font-bold text-primary text-center mb-0.5">{totalItems}</div>
-            <div className="text-xs text-muted-foreground text-center">Total Barang</div>
-          </div>
+      <View style={styles.statsContainer}>
+        <View style={styles.statsRow}>
+          <View style={styles.statCard}>
+            <View style={styles.iconBoxPrimary}>
+              <Package size={22} color={theme.colors.primary} />
+            </View>
+            <Text style={styles.statNumberPrimary}>{totalItems}</Text>
+            <Text style={styles.statLabel}>Total Barang</Text>
+          </View>
 
-          <div className="bg-card rounded-2xl p-4 shadow-sm border border-border">
-            <div className="flex justify-center mb-2">
-              <div className="w-12 h-12 bg-warning-soft rounded-xl flex items-center justify-center">
-                <AlertTriangle className="w-6 h-6 text-warning" />
-              </div>
-            </div>
-            <div className="text-2xl font-bold text-warning text-center mb-0.5">{lowStockCount}</div>
-            <div className="text-xs text-muted-foreground text-center">Stok Menipis</div>
-          </div>
-        </div>
-      </div>
+          <View style={styles.statCard}>
+            <View style={styles.iconBoxWarning}>
+              <AlertTriangle size={22} color={theme.colors.warning} />
+            </View>
+            <Text style={styles.statNumberWarning}>{lowStockCount}</Text>
+            <Text style={styles.statLabel}>Stok Menipis</Text>
+          </View>
+        </View>
+      </View>
 
-      {/* Inventory List */}
-      <div className="px-5">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h2 className="text-xl font-bold">Daftar Barang</h2>
-            <p className="text-xs text-muted-foreground">{totalItems} barang tercatat di sistem</p>
-          </div>
-        </div>
+      {/* Inventory Section Header */}
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionTitle}>Daftar Barang</Text>
+        <Text style={styles.sectionSubtitle}>{totalItems} barang tercatat di sistem</Text>
+      </View>
+    </View>
+  );
 
-        {items.length === 0 ? (
-          <div className="bg-card rounded-2xl p-10 text-center border border-border">
-            <Package className="w-16 h-16 text-muted-foreground/40 mx-auto mb-3" />
-            <p className="text-muted-foreground text-base font-medium">Belum ada barang di inventaris</p>
-            <p className="text-xs text-muted-foreground/70 mt-1">
-              Gunakan tombol Tambah di navbar bawah untuk menambahkan barang
-            </p>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {items.map(item => {
-              const isLowStock = item.quantity <= item.minStock;
-              const isOutOfStock = item.quantity === 0;
+  const ListEmpty = (
+    <View style={styles.emptyContainer}>
+      <Package size={48} color={theme.colors.mutedForeground} style={styles.emptyIcon} />
+      <Text style={styles.emptyTitle}>Belum ada barang di inventaris</Text>
+      <Text style={styles.emptySubtitle}>
+        Gunakan tombol Tambah di navbar bawah untuk menambahkan barang
+      </Text>
+    </View>
+  );
 
-              return (
-                <div
-                  key={item.id}
-                  className="bg-card rounded-2xl p-4 shadow-xs border border-border"
-                >
-                  {/* Item Title, Code, & Badge */}
-                  <div className="flex justify-between items-start mb-2">
-                    <div className="flex-1 min-w-0 pr-2">
-                      <div className="flex items-center gap-2 flex-wrap mb-1">
-                        <h3 className="text-base font-bold truncate">{item.name}</h3>
-                        {item.code && (
-                          <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded bg-secondary text-primary border border-border">
-                            {item.code}
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-xs text-muted-foreground">
-                        {item.category} • {item.location}
-                      </p>
-                    </div>
-
-                    <div className="flex items-center gap-1 shrink-0">
-                      {isLowStock && (
-                        <div className="flex items-center gap-1 text-warning bg-warning-soft px-2.5 py-1 rounded-lg">
-                          <AlertTriangle className="w-3.5 h-3.5" />
-                          <span className="text-xs font-semibold">Low</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Stock Metrics */}
-                  <div className="flex items-center justify-between py-2 px-3 bg-secondary/50 rounded-xl mb-3">
-                    <div>
-                      <p className="text-xs text-muted-foreground">Stok Saat Ini</p>
-                      <p className="text-2xl font-bold text-foreground">{item.quantity}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-xs text-muted-foreground">Batas Minimum</p>
-                      <p className="text-sm font-semibold text-muted-foreground">{item.minStock} unit</p>
-                    </div>
-                  </div>
-
-                  {/* Action Buttons */}
-                  <div className="flex items-center gap-2">
-                    <Button
-                      onClick={() =>
-                        handleOpenStockDialog(item.id, item.name, item.quantity, 'add')
-                      }
-                      className="flex-1 bg-success hover:bg-success/80 text-white h-10 text-xs font-medium"
-                      size="sm"
-                    >
-                      <Plus className="w-4 h-4 mr-1" />
-                      Masuk
-                    </Button>
-                    <Button
-                      onClick={() =>
-                        handleOpenStockDialog(item.id, item.name, item.quantity, 'remove')
-                      }
-                      className="flex-1 bg-primary hover:bg-primary-hover text-primary-foreground h-10 text-xs font-medium"
-                      size="sm"
-                      disabled={isOutOfStock}
-                    >
-                      <Minus className="w-4 h-4 mr-1" />
-                      Keluar
-                    </Button>
-                    <Button
-                      onClick={() => handleOpenQrDialog(item)}
-                      variant="outline"
-                      size="sm"
-                      className="h-10 px-3 border-border hover:bg-muted"
-                      title="Tampilkan QR"
-                    >
-                      <QrCode className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      onClick={() => handleRemoveItem(item.id, item.name)}
-                      variant="destructive"
-                      size="sm"
-                      className="h-10 px-3"
-                      title="Hapus Barang"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
+  return (
+    <View style={styles.screen}>
+      <FlatList
+        data={items}
+        keyExtractor={item => item.id}
+        renderItem={renderItem}
+        ListHeaderComponent={ListHeader}
+        ListEmptyComponent={ListEmpty}
+        contentContainerStyle={styles.listContent}
+      />
 
       {/* Stock Adjustment Dialog */}
       <StockDialog
         open={stockDialogState.open}
-        onOpenChange={(open) =>
-          setStockDialogState(prev => ({ ...prev, open }))
-        }
+        onOpenChange={open => setStockDialogState(prev => ({ ...prev, open }))}
         itemId={stockDialogState.itemId}
         itemName={stockDialogState.itemName}
         currentStock={stockDialogState.currentStock}
@@ -226,6 +239,232 @@ export function InventoryPage() {
         onOpenChange={setIsQrDialogOpen}
         item={selectedQrItem}
       />
-    </div>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+    backgroundColor: theme.colors.background,
+  },
+  listContent: {
+    paddingBottom: 24,
+  },
+  statsContainer: {
+    paddingHorizontal: 16,
+    marginTop: -28,
+    marginBottom: 20,
+    zIndex: 10,
+  },
+  statsRow: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  statCard: {
+    flex: 1,
+    backgroundColor: theme.colors.card,
+    borderRadius: theme.radii.lg,
+    padding: theme.spacing.md,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    elevation: 2,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+  },
+  iconBoxPrimary: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: theme.colors.primarySoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 6,
+  },
+  iconBoxWarning: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: theme.colors.warningSoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 6,
+  },
+  statNumberPrimary: {
+    fontSize: theme.typography.font2xl,
+    fontWeight: '800',
+    color: theme.colors.primary,
+  },
+  statNumberWarning: {
+    fontSize: theme.typography.font2xl,
+    fontWeight: '800',
+    color: theme.colors.warning,
+  },
+  statLabel: {
+    fontSize: theme.typography.fontXs,
+    color: theme.colors.mutedForeground,
+    marginTop: 2,
+  },
+  sectionHeader: {
+    paddingHorizontal: 20,
+    marginBottom: 12,
+  },
+  sectionTitle: {
+    fontSize: theme.typography.fontXl,
+    fontWeight: '800',
+    color: theme.colors.foreground,
+  },
+  sectionSubtitle: {
+    fontSize: theme.typography.fontXs,
+    color: theme.colors.mutedForeground,
+    marginTop: 2,
+  },
+  itemCard: {
+    backgroundColor: theme.colors.card,
+    borderRadius: theme.radii.lg,
+    padding: theme.spacing.md,
+    marginHorizontal: 16,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    elevation: 1,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 10,
+  },
+  titleColumn: {
+    flex: 1,
+    marginRight: 8,
+  },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 6,
+    marginBottom: 4,
+  },
+  itemNameText: {
+    fontSize: theme.typography.fontBase,
+    fontWeight: '700',
+    color: theme.colors.foreground,
+  },
+  codeTag: {
+    backgroundColor: theme.colors.secondary,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+  },
+  codeTagText: {
+    fontFamily: 'monospace',
+    fontSize: theme.typography.fontXs,
+    fontWeight: '700',
+    color: theme.colors.primary,
+  },
+  categoryLocationText: {
+    fontSize: theme.typography.fontXs,
+    color: theme.colors.mutedForeground,
+  },
+  lowBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: theme.colors.warningSoft,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+    gap: 4,
+  },
+  lowBadgeText: {
+    fontSize: theme.typography.fontXs,
+    fontWeight: '700',
+    color: theme.colors.warning,
+  },
+  metricsBox: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: theme.colors.muted,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: theme.radii.md,
+    marginBottom: 12,
+  },
+  metricLabel: {
+    fontSize: theme.typography.fontXs,
+    color: theme.colors.mutedForeground,
+  },
+  metricValue: {
+    fontSize: theme.typography.font2xl,
+    fontWeight: '800',
+    color: theme.colors.foreground,
+  },
+  metricRight: {
+    alignItems: 'flex-end',
+  },
+  metricSubValue: {
+    fontSize: theme.typography.fontSm,
+    fontWeight: '600',
+    color: theme.colors.mutedForeground,
+  },
+  actionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  actionBtn: {
+    flex: 1,
+    height: 38,
+  },
+  masukBtn: {
+    backgroundColor: theme.colors.success,
+  },
+  keluarBtn: {
+    backgroundColor: theme.colors.primary,
+  },
+  iconBtn: {
+    width: 40,
+    height: 38,
+    paddingHorizontal: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  iconMargin: {
+    marginRight: 4,
+  },
+  actionBtnWhiteText: {
+    color: theme.colors.white,
+    fontSize: theme.typography.fontXs,
+    fontWeight: '700',
+  },
+  emptyContainer: {
+    backgroundColor: theme.colors.card,
+    borderRadius: theme.radii.lg,
+    padding: 32,
+    alignItems: 'center',
+    marginHorizontal: 16,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+  },
+  emptyIcon: {
+    opacity: 0.4,
+    marginBottom: 12,
+  },
+  emptyTitle: {
+    fontSize: theme.typography.fontBase,
+    fontWeight: '600',
+    color: theme.colors.foreground,
+  },
+  emptySubtitle: {
+    fontSize: theme.typography.fontXs,
+    color: theme.colors.mutedForeground,
+    textAlign: 'center',
+    marginTop: 6,
+  },
+});
