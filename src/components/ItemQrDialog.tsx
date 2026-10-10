@@ -38,7 +38,7 @@ export function ItemQrDialog({ open, onOpenChange, item }: ItemQrDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent style={styles.dialogContent}>
-        <DialogHeader>
+        <DialogHeader style={styles.header}>
           <DialogTitle style={styles.headerTitle}>Kode QR Barang</DialogTitle>
         </DialogHeader>
 
@@ -47,7 +47,7 @@ export function ItemQrDialog({ open, onOpenChange, item }: ItemQrDialogProps) {
           <View style={styles.qrCard}>
             <QRCodeSVG
               value={qrValue}
-              size={180}
+              size={150}
               color="#000000"
               backgroundColor="#FFFFFF"
             />
@@ -85,32 +85,37 @@ export function ItemQrDialog({ open, onOpenChange, item }: ItemQrDialogProps) {
 
 const styles = StyleSheet.create({
   dialogContent: {
-    alignItems: 'center',
-    padding: theme.spacing.lg,
+    paddingHorizontal: 0,
+    paddingVertical: 0,
+  },
+  header: {
+    marginBottom: 4,
   },
   headerTitle: {
     textAlign: 'center',
+    fontSize: theme.typography.fontLg,
   },
   qrWrapper: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: theme.spacing.md,
+    paddingVertical: 4,
   },
   qrCard: {
     backgroundColor: '#FFFFFF',
-    padding: theme.spacing.lg,
-    borderRadius: theme.radii.lg,
+    padding: 10,
+    borderRadius: theme.radii.md,
     borderWidth: 1,
     borderColor: theme.colors.border,
     shadowColor: '#000000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
-    shadowRadius: 6,
+    shadowRadius: 5,
     elevation: 3,
   },
   infoContainer: {
     alignItems: 'center',
-    marginVertical: theme.spacing.sm,
+    marginTop: 4,
+    marginBottom: 6,
   },
   itemName: {
     fontSize: theme.typography.fontBase,
@@ -123,7 +128,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontFamily: 'monospace',
     color: theme.colors.primary,
-    marginTop: 4,
+    marginTop: 2,
   },
   itemMeta: {
     fontSize: theme.typography.fontXs,
@@ -135,9 +140,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     gap: theme.spacing.sm,
+    marginTop: 8,
   },
   actionBtn: {
     flex: 1,
+    height: 42,
   },
   iconSpacing: {
     marginRight: 6,

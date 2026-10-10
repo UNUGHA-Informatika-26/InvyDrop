@@ -47,14 +47,23 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
 export function DialogContent({
   children,
   style,
+  contentContainerStyle,
 }: {
   children?: React.ReactNode;
   style?: StyleProp<ViewStyle>;
+  contentContainerStyle?: StyleProp<ViewStyle>;
   className?: string;
 }) {
   return (
     <View style={[styles.dialogCard, style]}>
-      <ScrollView bounces={false} keyboardShouldPersistTaps="handled">
+      <ScrollView
+        bounces={false}
+        overScrollMode="never"
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={[styles.scrollContent, contentContainerStyle]}
+      >
         {children}
       </ScrollView>
     </View>
@@ -128,8 +137,11 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
     elevation: 8,
   },
+  scrollContent: {
+    flexGrow: 0,
+  },
   header: {
-    marginBottom: theme.spacing.md,
+    marginBottom: theme.spacing.sm,
   },
   title: {
     fontSize: theme.typography.fontXl,
@@ -145,6 +157,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-end',
     gap: theme.spacing.sm,
-    marginTop: theme.spacing.lg,
+    marginTop: theme.spacing.md,
   },
 });

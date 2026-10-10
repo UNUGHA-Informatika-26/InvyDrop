@@ -144,19 +144,19 @@ export function StockDialog({
 
 const styles = StyleSheet.create({
   body: {
-    paddingVertical: theme.spacing.md,
+    paddingVertical: theme.spacing.xs,
   },
   stockBanner: {
     backgroundColor: theme.colors.muted,
-    padding: theme.spacing.md,
+    padding: theme.spacing.sm,
     borderRadius: theme.radii.md,
-    marginBottom: theme.spacing.md,
+    marginBottom: theme.spacing.sm,
   },
   itemNameText: {
     fontSize: theme.typography.fontBase,
     fontWeight: '700',
     color: theme.colors.foreground,
-    marginBottom: 4,
+    marginBottom: 2,
   },
   currentStockText: {
     fontSize: theme.typography.fontSm,
@@ -167,12 +167,13 @@ const styles = StyleSheet.create({
     color: theme.colors.primary,
   },
   inputGroup: {
-    marginBottom: theme.spacing.md,
+    marginBottom: theme.spacing.sm,
   },
   previewBox: {
     backgroundColor: theme.colors.primarySoft,
-    padding: theme.spacing.md,
+    padding: theme.spacing.sm,
     borderRadius: theme.radii.md,
+    marginTop: 2,
   },
   previewLabel: {
     fontSize: theme.typography.fontSm,

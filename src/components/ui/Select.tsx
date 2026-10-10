@@ -57,6 +57,8 @@ export function Select({
           <View style={styles.optionsCard}>
             <FlatList
               data={options}
+              showsVerticalScrollIndicator={false}
+              overScrollMode="never"
               keyExtractor={item => item.value}
               renderItem={({ item }) => (
                 <Pressable

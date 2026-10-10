@@ -55,7 +55,13 @@ export function DrawerContent({
 }) {
   return (
     <View style={[styles.content, style]}>
-      <ScrollView bounces={false} keyboardShouldPersistTaps="handled">
+      <ScrollView
+        bounces={false}
+        overScrollMode="never"
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
         {children}
       </ScrollView>
     </View>
