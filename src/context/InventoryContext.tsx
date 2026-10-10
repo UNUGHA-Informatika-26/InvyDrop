@@ -9,6 +9,7 @@ export interface InventoryItem {
   quantity: number;
   minStock: number;
   location: string;
+  notes?: string;
   createdAt: string;
 }
 
@@ -56,6 +57,7 @@ const SEED_ITEMS: InventoryItem[] = [
     quantity: 14,
     minStock: 5,
     location: 'Aisle B - Bay 04',
+    notes: 'Simpan di area berventilasi baik. Cek level cairan elektrolit mingguan.',
     createdAt: new Date().toISOString(),
   },
   {
@@ -66,6 +68,7 @@ const SEED_ITEMS: InventoryItem[] = [
     quantity: 4,
     minStock: 12,
     location: 'Aisle A - Bay 01',
+    notes: 'Standar fumigasi ISPM 15, kapasitas beban maks 1.5 ton.',
     createdAt: new Date().toISOString(),
   },
   {

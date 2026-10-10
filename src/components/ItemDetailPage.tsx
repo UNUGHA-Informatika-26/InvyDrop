@@ -24,6 +24,7 @@ import {
   Package,
   QrCode,
   Pencil,
+  FileText,
 } from 'lucide-react-native';
 import { useInventory, InventoryItem } from '@/context/InventoryContext';
 import { useStockHistory, StockTransaction } from '@/context/StockHistoryContext';
@@ -347,6 +348,18 @@ export function ItemDetailPage({ itemId }: ItemDetailPageProps) {
             <Calendar size={14} color={theme.colors.mutedForeground} style={styles.metaIcon} />
             <Text style={styles.metaLabel}>Dibuat</Text>
             <Text style={styles.metaValue}>{formatDate(item.createdAt)}</Text>
+          </View>
+
+          {/* Divider & Catatan */}
+          <View style={styles.notesDivider} />
+          <View style={styles.notesContainer}>
+            <View style={styles.notesHeader}>
+              <FileText size={14} color={theme.colors.mutedForeground} style={styles.metaIcon} />
+              <Text style={styles.metaLabel}>Catatan</Text>
+            </View>
+            <Text style={[styles.notesContent, !item.notes?.trim() && styles.notesContentEmpty]}>
+              {item.notes?.trim() ? item.notes.trim() : 'Tidak ada catatan'}
+            </Text>
           </View>
         </View>
 
@@ -689,6 +702,36 @@ const styles = StyleSheet.create({
     color: theme.colors.foreground,
     textAlign: 'right',
     flex: 1,
+  },
+  notesDivider: {
+    height: 1,
+    backgroundColor: theme.colors.border,
+    marginTop: 4,
+    marginBottom: 12,
+  },
+  notesContainer: {
+    paddingTop: 2,
+  },
+  notesHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 6,
+  },
+  notesContent: {
+    fontSize: 13,
+    color: theme.colors.foreground,
+    lineHeight: 19,
+    backgroundColor: theme.colors.muted,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderRadius: 8,
+  },
+  notesContentEmpty: {
+    color: theme.colors.mutedForeground,
+    fontStyle: 'italic',
+    backgroundColor: 'transparent',
+    paddingHorizontal: 0,
+    paddingVertical: 2,
   },
 
   // Actions

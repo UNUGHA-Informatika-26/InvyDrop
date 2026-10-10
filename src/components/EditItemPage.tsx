@@ -106,7 +106,7 @@ export function EditItemPage({ itemId }: Props) {
   const [category, setCategory] = useState(item?.category ?? '');
   const [minStock, setMinStock] = useState(item?.minStock ?? 0);
   const [location, setLocation] = useState(item?.location ?? '');
-  const [notes, setNotes] = useState('');
+  const [notes, setNotes] = useState(item?.notes ?? '');
 
   // Validation errors
   const [nameError, setNameError] = useState('');
@@ -154,11 +154,12 @@ export function EditItemPage({ itemId }: Props) {
       category: category.trim(),
       minStock,
       location: location.trim(),
+      notes: notes.trim() || undefined,
     });
 
     toast.success(`${name.trim()} berhasil diperbarui`);
     router.back();
-  }, [item, name, code, category, minStock, location, itemId, updateItem, router]);
+  }, [item, name, code, category, minStock, location, notes, itemId, updateItem, router]);
 
   if (!item) {
     return (

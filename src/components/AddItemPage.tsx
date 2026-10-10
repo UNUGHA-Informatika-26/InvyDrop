@@ -181,6 +181,7 @@ export function AddItemPage({ initialCode, onClose }: Props) {
       quantity,
       minStock,
       location: location.trim(),
+      notes: notes.trim() || undefined,
     };
 
     addItem(newItem);
