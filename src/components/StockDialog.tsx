@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useInventory } from '@/context/InventoryContext';
+import { useStockHistory } from '@/context/StockHistoryContext';
 import {
   Dialog,
   DialogContent,
@@ -32,6 +33,7 @@ export function StockDialog({
   mode,
 }: StockDialogProps) {
   const { addStock, removeStock } = useInventory();
+  const { addTransaction } = useStockHistory();
   const [quantity, setQuantity] = useState('');
 
   const handleSubmit = () => {
@@ -49,9 +51,11 @@ export function StockDialog({
 
     if (mode === 'add') {
       addStock(itemId, qty);
+      addTransaction(itemId, 'masuk', qty);
       toast.success(`Berhasil menambah +${qty} unit ke ${itemName}`);
     } else {
       removeStock(itemId, qty);
+      addTransaction(itemId, 'keluar', qty);
       toast.success(`Berhasil mengeluarkan -${qty} unit dari ${itemName}`);
     }
 

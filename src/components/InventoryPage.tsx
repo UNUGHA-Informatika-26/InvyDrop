@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useRouter } from 'expo-router';
 import {
   View,
   Text,
@@ -31,6 +32,7 @@ import { theme } from '@/theme';
 type FilterType = 'all' | 'low' | 'safe';
 
 export function InventoryPage() {
+  const router = useRouter();
   const { items, removeItem } = useInventory();
   const [selectedQrItem, setSelectedQrItem] = useState<InventoryItem | null>(null);
   const [isQrDialogOpen, setIsQrDialogOpen] = useState(false);
@@ -121,7 +123,11 @@ export function InventoryPage() {
     const progressWidth = Math.min(Math.max(Math.round((stockRatio / 2) * 100), 5), 100);
 
     return (
-      <View style={[styles.itemCard, isLowStock && styles.itemCardWarning]}>
+      <Pressable
+        onPress={() => router.push(`/item/${item.id}`)}
+        style={({ pressed }) => [{ opacity: pressed ? 0.92 : 1 }]}
+      >
+        <View style={[styles.itemCard, isLowStock && styles.itemCardWarning]}>
         {/* Item Title, SKU, Category & Status Badge */}
         <View style={styles.cardHeader}>
           <View style={styles.titleColumn}>
@@ -241,6 +247,7 @@ export function InventoryPage() {
           </Button>
         </View>
       </View>
+      </Pressable>
     );
   };
 
