@@ -1,7 +1,7 @@
 import React from 'react';
-import { ProtectedRoute } from '@/app/components/ProtectedRoute';
-import { Layout } from '@/app/components/Layout';
-import { SettingsPage } from '@/app/components/SettingsPage';
+import { ProtectedRoute } from '@/components/ProtectedRoute';
+import { Layout } from '@/components/Layout';
+import { SettingsPage } from '@/components/SettingsPage';
 
 export default function SettingsRoute() {
   return (

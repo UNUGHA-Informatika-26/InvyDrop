@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, StyleProp, ViewStyle } from 'react-native';
 import { Image, ImageSource } from 'expo-image';
 import logo from '@/assets/logo-blackarch.png';
-import { theme } from '../../theme';
+import { theme } from '@/theme';
 
 interface HeroBannerProps {
   imageSrc: any;

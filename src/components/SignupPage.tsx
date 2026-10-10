@@ -9,7 +9,7 @@ import {
   Pressable,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/Button';
 import { TextField } from '@/components/ui/TextField';
 import { Label } from '@/components/ui/Label';
@@ -17,7 +17,7 @@ import { UserPlus } from 'lucide-react-native';
 import { toast } from '@/components/ui/Toast';
 import { HeroBanner } from './HeroBanner';
 import signupBg from '@/assets/bulan-jatuh.png';
-import { theme } from '../../theme';
+import { theme } from '@/theme';
 
 export function SignupPage() {
   const router = useRouter();

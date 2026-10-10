@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Slot } from 'expo-router';
 import { BottomNav } from './BottomNav';
-import { useInventory, InventoryItem } from '../context/InventoryContext';
-import { useQrScanner } from '../../hooks/useQrScanner';
+import { useInventory, InventoryItem } from '@/context/InventoryContext';
+import { useQrScanner } from '@/hooks/useQrScanner';
 import { WebScannerSheet } from './WebScannerSheet';
 import { ScanDetailDrawer } from './ScanDetailDrawer';
 import { AddItemDialog } from './AddItemDialog';
 import { ItemQrDialog } from './ItemQrDialog';
 import { toast } from '@/components/ui/Toast';
-import { theme } from '../../theme';
+import { theme } from '@/theme';
 
 interface LayoutProps {
   children?: React.ReactNode;

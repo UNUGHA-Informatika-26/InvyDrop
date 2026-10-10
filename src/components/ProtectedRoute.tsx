@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useAuth } from '../context/AuthContext';
-import { theme } from '../../theme';
+import { useAuth } from '@/context/AuthContext';
+import { theme } from '@/theme';
 
 export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();

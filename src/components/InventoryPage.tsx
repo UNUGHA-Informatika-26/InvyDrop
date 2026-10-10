@@ -7,7 +7,7 @@ import {
   Alert,
   Pressable,
 } from 'react-native';
-import { useInventory, InventoryItem } from '../context/InventoryContext';
+import { useInventory, InventoryItem } from '@/context/InventoryContext';
 import { AlertTriangle, Trash2, Plus, Minus, Package, QrCode } from 'lucide-react-native';
 import { Button } from '@/components/ui/Button';
 import { StockDialog } from './StockDialog';
@@ -15,7 +15,7 @@ import { ItemQrDialog } from './ItemQrDialog';
 import { HeroBanner } from './HeroBanner';
 import warehouseImage from '@/assets/bulan-jatuh2.png';
 import { toast } from '@/components/ui/Toast';
-import { theme } from '../../theme';
+import { theme } from '@/theme';
 
 export function InventoryPage() {
   const { items, removeItem } = useInventory();

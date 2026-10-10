@@ -1,7 +1,7 @@
 import React from 'react';
-import { ProtectedRoute } from '@/app/components/ProtectedRoute';
-import { Layout } from '@/app/components/Layout';
-import { InventoryPage } from '@/app/components/InventoryPage';
+import { ProtectedRoute } from '@/components/ProtectedRoute';
+import { Layout } from '@/components/Layout';
+import { InventoryPage } from '@/components/InventoryPage';
 
 export default function IndexRoute() {
   return (

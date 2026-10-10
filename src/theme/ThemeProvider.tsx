@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useMemo } from 'react';
-import { theme as defaultTheme, Theme } from '../../theme';
+import { theme as defaultTheme, Theme } from './tokens';
 
 interface ThemeContextType {
   theme: Theme;

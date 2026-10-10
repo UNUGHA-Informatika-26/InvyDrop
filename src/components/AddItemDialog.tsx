@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { useInventory } from '../context/InventoryContext';
+import { useInventory } from '@/context/InventoryContext';
 import {
   Dialog,
   DialogContent,
@@ -12,7 +12,7 @@ import { TextField } from '@/components/ui/TextField';
 import { Label } from '@/components/ui/Label';
 import { Button } from '@/components/ui/Button';
 import { toast } from '@/components/ui/Toast';
-import { theme } from '../../theme';
+import { theme } from '@/theme';
 
 interface AddItemDialogProps {
   open: boolean;

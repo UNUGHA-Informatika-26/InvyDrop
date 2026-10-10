@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { X } from 'lucide-react-native';
-import { theme } from '../../theme';
+import { theme } from '@/theme';
 import { Button } from '@/components/ui/Button';
 
 interface WebScannerSheetProps {

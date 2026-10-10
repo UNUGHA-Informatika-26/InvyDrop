@@ -1,9 +1,9 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, useWindowDimensions } from 'react-native';
-import { useInventory } from '../context/InventoryContext';
+import { useInventory } from '@/context/InventoryContext';
 import { Package, AlertTriangle, TrendingDown, Archive } from 'lucide-react-native';
 import { BarChart, PieChart } from 'react-native-gifted-charts';
-import { theme } from '../../theme';
+import { theme } from '@/theme';
 
 export function StatisticsPage() {
   const { width: screenWidth } = useWindowDimensions();
@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   statCard: {
-    width: (screenWidth - 44) / 2,
+    width: '48%',
     backgroundColor: theme.colors.card,
     borderRadius: theme.radii.lg,
     padding: 16,

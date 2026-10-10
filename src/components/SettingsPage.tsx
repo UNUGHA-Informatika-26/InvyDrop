@@ -9,11 +9,11 @@ import {
   LogOut,
   User,
 } from 'lucide-react-native';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'expo-router';
 import { Button } from '@/components/ui/Button';
 import { toast } from '@/components/ui/Toast';
-import { theme } from '../../theme';
+import { theme } from '@/theme';
 
 export function SettingsPage() {
   const { user, logout } = useAuth();

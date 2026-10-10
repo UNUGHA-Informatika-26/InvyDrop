@@ -10,8 +10,8 @@ import {
 } from '@/components/ui/Dialog';
 import { Button } from '@/components/ui/Button';
 import { Printer } from 'lucide-react-native';
-import { InventoryItem } from '../context/InventoryContext';
-import { theme } from '../../theme';
+import { InventoryItem } from '@/context/InventoryContext';
+import { theme } from '@/theme';
 
 interface ItemQrDialogProps {
   open: boolean;

@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useRouter, usePathname } from 'expo-router';
 import { Package, BarChart3, Plus, ScanLine, Settings } from 'lucide-react-native';
-import { theme } from '../../theme';
+import { theme } from '@/theme';
 
 interface BottomNavProps {
   onAddClick: () => void;

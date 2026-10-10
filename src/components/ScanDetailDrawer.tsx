@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { InventoryItem, useInventory } from '../context/InventoryContext';
+import { InventoryItem, useInventory } from '@/context/InventoryContext';
 import {
   Drawer,
   DrawerContent,
@@ -15,7 +15,7 @@ import { Label } from '@/components/ui/Label';
 import { Plus, Minus, QrCode, ArrowRight, AlertTriangle, Package } from 'lucide-react-native';
 import { toast } from '@/components/ui/Toast';
 import { useRouter } from 'expo-router';
-import { theme } from '../../theme';
+import { theme } from '@/theme';
 
 interface ScanDetailDrawerProps {
   open: boolean;
