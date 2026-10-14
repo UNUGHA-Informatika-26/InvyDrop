@@ -1,12 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useRouter, usePathname } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Package, BarChart3, Plus, ScanLine, Settings } from 'lucide-react-native';
 import { theme } from '@/theme';
+import { AddActionMenuSheet } from '@/components/AddActionMenuSheet';
 
 interface BottomNavProps {
-  onAddClick: () => void;
+  onAddClick?: () => void;
   onScanClick: () => void;
 }
 
@@ -14,130 +15,141 @@ export function BottomNav({ onAddClick, onScanClick }: BottomNavProps) {
   const router = useRouter();
   const pathname = usePathname();
   const insets = useSafeAreaInsets();
+  const [menuVisible, setMenuVisible] = useState(false);
 
   const isInventoryActive = pathname === '/' || pathname === '' || pathname === '/index';
   const isStatsActive = pathname === '/statistics';
   const isSettingsActive = pathname === '/settings';
 
   return (
-    <View style={[styles.navBar, { paddingBottom: Math.max(insets.bottom, 12) }]}>
-      <View style={styles.navContent}>
-        {/* Slot 1: Inventory */}
-        <Pressable
-          accessibilityRole="button"
-          onPress={() => router.push('/')}
-          style={styles.tabButton}
-        >
-          <View
-            style={[
-              styles.tabInner,
-              isInventoryActive && styles.activeTabInner,
-            ]}
-          >
-            <Package
-              size={22}
-              color={isInventoryActive ? theme.colors.primary : theme.colors.mutedForeground}
-              strokeWidth={2}
-            />
-            <Text
-              style={[
-                styles.tabLabel,
-                isInventoryActive && styles.activeTabLabel,
-              ]}
-            >
-              Inventory
-            </Text>
-          </View>
-        </Pressable>
-
-        {/* Slot 2: Statistics */}
-        <Pressable
-          accessibilityRole="button"
-          onPress={() => router.push('/statistics')}
-          style={styles.tabButton}
-        >
-          <View
-            style={[
-              styles.tabInner,
-              isStatsActive && styles.activeTabInner,
-            ]}
-          >
-            <BarChart3
-              size={22}
-              color={isStatsActive ? theme.colors.primary : theme.colors.mutedForeground}
-              strokeWidth={2}
-            />
-            <Text
-              style={[
-                styles.tabLabel,
-                isStatsActive && styles.activeTabLabel,
-              ]}
-            >
-              Statistics
-            </Text>
-          </View>
-        </Pressable>
-
-        {/* Slot 3: Tambah (Floating center action) */}
-        <View style={styles.centerContainer}>
+    <>
+      <View style={[styles.navBar, { paddingBottom: Math.max(insets.bottom, 12) }]}>
+        <View style={styles.navContent}>
+          {/* Slot 1: Inventory */}
           <Pressable
             accessibilityRole="button"
-            onPress={onAddClick}
-            style={({ pressed }) => [
-              styles.floatingAddBtn,
-              pressed && styles.floatingAddBtnPressed,
-            ]}
+            onPress={() => router.push('/')}
+            style={styles.tabButton}
           >
-            <Plus size={26} color={theme.colors.white} strokeWidth={2.5} />
-          </Pressable>
-          <Text style={styles.centerLabel}>Tambah</Text>
-        </View>
-
-        {/* Slot 4: Scan (Action) */}
-        <Pressable
-          accessibilityRole="button"
-          onPress={onScanClick}
-          style={styles.tabButton}
-        >
-          <View style={styles.tabInner}>
-            <ScanLine
-              size={22}
-              color={theme.colors.mutedForeground}
-              strokeWidth={2}
-            />
-            <Text style={styles.tabLabel}>Scan</Text>
-          </View>
-        </Pressable>
-
-        {/* Slot 5: Settings */}
-        <Pressable
-          accessibilityRole="button"
-          onPress={() => router.push('/settings')}
-          style={styles.tabButton}
-        >
-          <View
-            style={[
-              styles.tabInner,
-              isSettingsActive && styles.activeTabInner,
-            ]}
-          >
-            <Settings
-              size={22}
-              color={isSettingsActive ? theme.colors.primary : theme.colors.mutedForeground}
-              strokeWidth={2}
-            />
-            <Text
+            <View
               style={[
-                styles.tabLabel,
-                isSettingsActive && styles.activeTabLabel,
+                styles.tabInner,
+                isInventoryActive && styles.activeTabInner,
               ]}
             >
-              Settings
-            </Text>
+              <Package
+                size={22}
+                color={isInventoryActive ? theme.colors.primary : theme.colors.mutedForeground}
+                strokeWidth={2}
+              />
+              <Text
+                style={[
+                  styles.tabLabel,
+                  isInventoryActive && styles.activeTabLabel,
+                ]}
+              >
+                Inventory
+              </Text>
+            </View>
+          </Pressable>
+
+          {/* Slot 2: Statistics */}
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => router.push('/statistics')}
+            style={styles.tabButton}
+          >
+            <View
+              style={[
+                styles.tabInner,
+                isStatsActive && styles.activeTabInner,
+              ]}
+            >
+              <BarChart3
+                size={22}
+                color={isStatsActive ? theme.colors.primary : theme.colors.mutedForeground}
+                strokeWidth={2}
+              />
+              <Text
+                style={[
+                  styles.tabLabel,
+                  isStatsActive && styles.activeTabLabel,
+                ]}
+              >
+                Statistics
+              </Text>
+            </View>
+          </Pressable>
+
+          {/* Slot 3: Tambah / Aksi (Floating center action) */}
+          <View style={styles.centerContainer}>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Buka menu aksi"
+              onPress={() => setMenuVisible(true)}
+              style={({ pressed }) => [
+                styles.floatingAddBtn,
+                pressed && styles.floatingAddBtnPressed,
+              ]}
+            >
+              <Plus size={26} color={theme.colors.white} strokeWidth={2.5} />
+            </Pressable>
+            <Text style={styles.centerLabel}>Aksi</Text>
           </View>
-        </Pressable>
+
+          {/* Slot 4: Scan (Action) */}
+          <Pressable
+            accessibilityRole="button"
+            onPress={onScanClick}
+            style={styles.tabButton}
+          >
+            <View style={styles.tabInner}>
+              <ScanLine
+                size={22}
+                color={theme.colors.mutedForeground}
+                strokeWidth={2}
+              />
+              <Text style={styles.tabLabel}>Scan</Text>
+            </View>
+          </Pressable>
+
+          {/* Slot 5: Settings */}
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => router.push('/settings')}
+            style={styles.tabButton}
+          >
+            <View
+              style={[
+                styles.tabInner,
+                isSettingsActive && styles.activeTabInner,
+              ]}
+            >
+              <Settings
+                size={22}
+                color={isSettingsActive ? theme.colors.primary : theme.colors.mutedForeground}
+                strokeWidth={2}
+              />
+              <Text
+                style={[
+                  styles.tabLabel,
+                  isSettingsActive && styles.activeTabLabel,
+                ]}
+              >
+                Settings
+              </Text>
+            </View>
+          </Pressable>
+        </View>
       </View>
-    </View>
+
+      <AddActionMenuSheet
+        visible={menuVisible}
+        onClose={() => setMenuVisible(false)}
+        onSelectAddItem={() => router.push('/add-item')}
+        onSelectOpname={() => router.push('/stock-opname')}
+      />
+    </>
   );
 }
 
