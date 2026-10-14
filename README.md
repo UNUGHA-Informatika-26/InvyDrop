@@ -1,10 +1,10 @@
-# 📦 InvyDrop
+# InvyDrop
 
 Sistem manajemen inventaris dan pergudangan dengan tema warna *Warm Orange*.
 
 ---
 
-## ✨ Fitur Utama
+## Fitur Utama
 
 - **Dashboard & Analitik**: Visualisasi stok dan statistik barang.
 - **Manajemen Barang**: Tambah, edit, hapus, serta catat stok masuk dan keluar.
@@ -13,7 +13,7 @@ Sistem manajemen inventaris dan pergudangan dengan tema warna *Warm Orange*.
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Core**: React 18, TypeScript, Vite
 - **UI & Styling**: Tailwind CSS v4, shadcn/ui, MUI v7, Lucide Icons
@@ -22,7 +22,7 @@ Sistem manajemen inventaris dan pergudangan dengan tema warna *Warm Orange*.
 
 ---
 
-## 🚀 Cara Menjalankan
+## Cara Menjalankan
 
 ### 1. Instalasi Dependensi
 ```bash
