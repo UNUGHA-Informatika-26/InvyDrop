@@ -31,3 +31,7 @@ This project incorporates third-party software and digital assets under their re
 - **Unsplash**
   - Photos used under the [Unsplash License](https://unsplash.com/license)
   - Free to use for commercial and non-commercial purposes.
+
+
+---
+© 2026-O2N **Orang Orangan Ngawi** — All rights reserved.
