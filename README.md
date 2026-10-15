@@ -1,15 +1,15 @@
 # InvyDrop
 
-Sistem manajemen inventaris dan pergudangan dengan tema warna *Warm Orange*.
+A warehouse management system featuring a *Warm Orange* color theme.
 
 ---
 
-## Fitur Utama
+## Key Features
 
-- **Dashboard & Analitik**: Visualisasi stok dan statistik barang.
-- **Manajemen Barang**: Tambah, edit, hapus, serta catat stok masuk dan keluar.
-- **Pencarian & Filter**: Filter instan berdasarkan SKU, kategori, atau status stok.
-- **Dark Mode & Aksesibilitas**: Tampilan yang ramah mata dan memenuhi standar WCAG AA.
+- **Dashboard & Analytics**: Stock visualization and inventory statistics.
+- **Inventory Management**: Add, edit, delete, and track incoming or outgoing stock.
+- **Search & Filtering**: Instant filter options by SKU, category, or stock status.
+- **Dark Mode & Accessibility**: Eye-friendly interface adhering to WCAG AA accessibility standards.
 
 ---
 
@@ -17,13 +17,13 @@ Sistem manajemen inventaris dan pergudangan dengan tema warna *Warm Orange*.
 
 - **Core**: React 18, TypeScript, Vite
 - **UI & Styling**: Tailwind CSS v4, shadcn/ui, MUI v7, Lucide Icons
-- **Chart & Toast**: Recharts, Sonner
-- **Theme**: `next-themes`
+- **Charts & Notifications**: Recharts, Sonner
+- **Theming**: `next-themes`
 
 ---
 
-## Cara Menjalankan
+## Getting Started
 
-### 1. Instalasi Dependensi
+### 1. Install Dependencies
 ```bash
 pnpm install
