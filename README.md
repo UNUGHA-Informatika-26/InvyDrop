@@ -27,3 +27,7 @@ A warehouse management system featuring a *Warm Orange* color theme.
 ### 1. Install Dependencies
 ```bash
 pnpm install
+```
+
+---
+© 2026-O2N **Orang Orangan Ngawi** — All rights reserved.
